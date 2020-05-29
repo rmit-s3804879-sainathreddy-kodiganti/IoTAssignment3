@@ -1,0 +1,116 @@
+{% extends 'layout.html' %}
+
+{% block title %}Cars{% endblock %}
+
+{% block content %}
+
+<h2>Car list</h2>
+
+{% with messages = get_flashed_messages()  %}
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="alert alert-success alert-dismisable" role="alert">
+
+    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+        <span area-hidden="true"> x </span>
+    </button>
+
+    {{ message }}
+
+</div>
+
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container">
+    <div class="row">
+        <div class="col md-12">
+            <div class="carlist">
+                <table id="myTable" class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Car id</th>
+                            <th scope="col">make</th>
+                            <th scope="col">bodytype</th>
+                            <th scope="col">color</th>
+                            <th scope="col">seats</th>
+                            <th scope="col">location</th>
+                            <th scope="col">cost per hour</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars: %}
+                        <tr>
+                            <td>{{ car['carid'] }}</td>
+                            <td>{{ car['make'] }}</td>
+                            <td>{{ car['bodytype'] }}</td>
+                            <td>{{ car['color'] }}</td>
+                            <td>{{ car['seats'] }}</td>
+                            <td>{{ car['location'] }}</td>
+                            <td>{{ car['costperhour'] }}</td>
+                            <td>
+                                {% if car.isavailable : %}
+                                <form action="{{ url_for('site.carbooking') }}" method="post">
+                                    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}" >
+                                    <input type="date" name="fromdate" id="fromdate" >
+                                    <input type="date" name="todate" id="todate" >
+                                    <input type="submit" value="book now" />
+                                  </form>
+                              {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <script>
+                $(document).ready(function () {
+                    $('#myTable').DataTable({
+                        autoFill: true
+                    });
+                });
+
+            </script>
+            {% endblock %}
+
+<!----modal for pop up starts-->
+<div id="mymodal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h4 class="modal-title">Book now</h4>
+            </div>
+            <div class="modal-body">
+                
+                <form action="{{ url_for('site.carbooking') }}" method="POST">
+            
+                    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}" >
+
+                    <div class="form-group">
+                        <label>fromdate:</label>
+                        <input type="date" class="form-control" name="fromdate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>To date:</label>
+                        <input type="date" class="form-control" name="todate" required>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">confirm</button>
+                    </div>
+                    </form>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!----modal for pop up ends-->

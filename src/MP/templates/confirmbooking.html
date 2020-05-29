@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block title %}Confirm Booking{% endblock %}
+
+{% block content %}
+<h2>Car list</h2>
+<hr />
+
+
+
+Carid : {{ car['carid'] }}
+Make: {{ car['make'] }}
+Body : {{ car['bodytype'] }}
+color : {{ car['color'] }}
+seats : {{ car['seats'] }}
+location : {{ car['location'] }}
+costperhour : {{ car['costperhour'] }}
+
+
+<form action="carbooking" method="post">
+    fromdate : <input type="date" name="fromdate" required>
+    <br>
+    todate : <input type="date" required>
+    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}">
+    <button type="submit" value="carbooking"> book now</button>
+    <!-- <button type="submit" name="carbooking" id="carbooking" value="{{ car['carid'] }}"> Book now</button> -->
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% block content %}
+
+<a class="btn btn-default" style="align-items: center;" href="{{ url_for('site.home') }}">Back to home</a>
+
+<div id="map" style="height: 70%; margin: 50; padding: 20;"></div>
+    
+<script type="text/javascript">    
+    function initMap(data){	  
+        var locations = {{location}};
+        console.log(locations)
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 10,
+            center: new google.maps.LatLng(-37.817463, 144.968440),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+
+        var marker, i;
+
+        for (i = 0; i < locations.length; i++) {  
+            marker = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+            map: map
+            });
+
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infowindow.setContent("car id: "+(locations[i][0]).toString());
+                infowindow.open(map, marker);
+            }
+            })(marker, i));
+        }	  
+    }
+    
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDC-9dI8nUOxMG7LZl3FaBEv0v7Uk7tvU&callback=initMap" async defer></script>
+
+{% endblock %}

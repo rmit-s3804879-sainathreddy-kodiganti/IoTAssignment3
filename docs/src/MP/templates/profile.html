@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>Profile Page</h2>
+<div>
+    <p>Your account details are below:</p>
+    <table table>
+        <tr>
+            <td>Full name:</td>
+            <td>{{ account['fname'] }} {{ account['lname'] }}</td>
+        </tr>
+        <tr>
+            <td>Username/email:</td>
+            <td>{{ account['email'] }}</td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <h3>upload image</h3>
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('site.uploadimg') }}" id="upload-form" >
+    <input type="file" name="file" accept="image/*" multiple> 
+    <input type="submit" value="send">
+    </form> 
+</div>
+
+{% endblock %}

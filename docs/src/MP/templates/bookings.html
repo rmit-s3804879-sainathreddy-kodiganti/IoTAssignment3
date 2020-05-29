@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block title %}Bookings{% endblock %}
+
+{% block content %}
+<h2>Booking History</h2>
+<hr/>
+
+<div>
+
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Car</th>
+            <th scope="col">Seats</th>
+            <th scope="col">Color</th>
+            <th scope="col">Cost/Hr</th>
+            <th scope="col">From</th>
+            <th scope="col">To</th>
+            <th scope="col">Total</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for booking in bookinglist: %}
+          <tr>
+            <td>{{ booking['car']['make'] }}</td>
+            <td>{{ booking['car']['seats'] }}</td>
+            <td>{{ booking['car']['color'] }}</td>
+            <td>${{ booking['car']['costperhour'] }}</td>
+            <td>{{ booking['fromdate'] }}</td>
+            <td>{{ booking['todate'] }}</td>
+            <td>${{ booking['total'] }}</td>
+            <td>
+            {% if booking.isactive : %}
+              <form action="cancelbooking" method="post">
+                <input type="hidden" name="bookingid" id="bookingid" value="{{ booking['bookingid'] }}" >
+                <input type="submit" value="cancel" />
+              </form>
+            {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>      
+</div>
+{% endblock %}

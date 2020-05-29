@@ -1,0 +1,46 @@
+.carlist{
+display: flex;
+/* align-items: flex-start; */
+/* align-items: flex-end; */
+align-items: stretch;
+/* padding: 10px; */
+box-shadow: 5px 6px 42px -12px rgba(117, 117, 117, 0.75);
+width: 100%;
+/* justify-content: space-between; */
+align-content: center;
+}
+
+.carlist div{
+    border:1px  rgb(136, 136, 136) solid;
+    border-style: groove;
+    padding: 60px;
+}
+
+.box-1{
+    flex: 0 0 168px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: 100%;
+}
+
+.box-2{
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    justify-content: center;
+    border-right: .5px dotted rgba(0,0,0,.1);
+    border-left: .5px dotted rgba(0,0,0,.1);
+    width: 100%;
+    display: block;
+}
+
+.box-3{
+    flex: 0 0 178px;
+    display: flex;
+    display: block;
+}
+
+
+.list{
+list-style: none;
+}
