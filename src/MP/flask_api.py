@@ -297,8 +297,20 @@ def get_bookings(userid):
 
     return jsonify(results)
 
-# Endpoint to cancel booking
 
+@api.route("/api/bookings", methods=["GET"])
+def get_all_bookings():
+    """This function/api end gets all the booking for all user. This includes 
+    active bookings and all the past bookings.
+    :param: (number) userid
+    :return: dict{k,v}: collection of Bookings
+    """
+    # get all the bookings for userid
+    bookings = Booking.query.all()
+    # dump in the Schema
+    results = bookingsSchema.dump(bookings)
+
+    return jsonify(results)
 
 @api.route("/api/bookings/<bookingid>", methods=["DELETE"])
 def delete_bookings(bookingid):
