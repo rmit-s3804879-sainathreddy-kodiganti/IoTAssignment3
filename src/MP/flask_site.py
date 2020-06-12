@@ -91,21 +91,26 @@ def home():
     if 'loggedin' in session:
         role = session['role']
 
-        if role == 'admin':
-            return render_template('admin/admin-dashboard.html', username=session['username'])
-        elif role == 'engineer':
+        
+        if role == 'engineer':
             return render_template('engineer/engineer-dashboard.html', username=session['username'])
         elif role == 'manager':
             return render_template('manager/manager-dashboard.html', username=session['username'])
         else:
-            response = requests.get("http://localhost:8080/api/getcars")
-            print(response)
-            cars = json.loads(response.text)
-            return render_template('home.html', username=session['username'], cars=cars)
+            car_response = requests.get("http://localhost:8080/api/getcars")
+            cars = json.loads(car_response.text)
+            
+            if role == 'admin':
+                user_response = requests.get("http://localhost:8080/api/user")
+                users = json.loads(user_response.text)
+
+                bookings_response = requests.get("http://localhost:8080/api/bookings")
+                bookings = json.loads(bookings_response.text)
+                return render_template('admin/admin-dashboard.html', username=session['username'], cars=cars, users=users, bookings=bookings)
+            else:
+                return render_template('home.html', username=session['username'], cars=cars)
     # users is not loggedin redirect to login page
     return redirect(url_for('site.login'))
-
-# this will be the profile page, only accessible for loggedin users
 
 
 @site.route('/profile',  methods=['GET'])
@@ -126,17 +131,32 @@ def profile():
     return redirect(url_for('site.login'))
 
 
-@site.route('/cars', methods=['GET', 'POST'])
-def cars():
+# @site.route('/cars', methods=['GET', 'POST'])
+# def cars():
+#     """This function renders profile page for a user.
+#     :param: None
+#     :return: redirect to login page or home page.
+#     """
+#     if 'loggedin' in session:
+#         response = requests.get(
+#             "http://localhost:8080/api/get_cars/"+str(session['carid']))
+#         cars = json.loads(response.text)
+#         return render_template('home.html', cars=cars)
+
+#     return redirect(url_for('site.login'))
+
+
+@site.route('/admincars', methods=['GET', 'POST'])
+def admin_cars():
     """This function renders profile page for a user.
     :param: None
     :return: redirect to login page or home page.
     """
     if 'loggedin' in session:
         response = requests.get(
-            "http://localhost:8080/api/get_cars/"+str(session['carid']))
+            "http://localhost:8080/api/getcars")
         cars = json.loads(response.text)
-        return render_template('home.html', cars=cars)
+        return render_template('admin/admin-cars.html', cars=cars)
 
     return redirect(url_for('site.login'))
 
