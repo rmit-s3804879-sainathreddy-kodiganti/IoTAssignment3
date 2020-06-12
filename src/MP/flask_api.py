@@ -46,6 +46,8 @@ class User(db.Model):
     fname = db.Column(db.String(200))
     lname = db.Column(db.String(200))
     faceimage = db.Column(db.LargeBinary())
+    role = db.Column(db.String(200))
+    macaddress = db.Column(db.String(200))
     bookings = db.relationship("Booking", backref="customer")
 
     def __repr__(self):
@@ -106,7 +108,7 @@ class UserSchema(ma.Schema):
     class Meta:
         model = User
         # Fields to expose.
-        fields = ("userid", "email", "password", "fname", "lname", "faceimage")
+        fields = ("userid", "email", "password", "fname", "lname", "faceimage", "role", "macaddress")
 
 
 userSchema = UserSchema()

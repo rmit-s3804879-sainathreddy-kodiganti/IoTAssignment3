@@ -53,6 +53,8 @@ def login():
             session['loggedin'] = True
             session['userid'] = data['userid']
             session['username'] = data['email']
+            session['role'] = data['role']
+
             # Redirect to home page
             return redirect(url_for('site.home'))
         else:
@@ -87,10 +89,19 @@ def home():
     """
     # Check if user is loggedin
     if 'loggedin' in session:
-        response = requests.get("http://localhost:8080/api/getcars")
-        print(response)
-        cars = json.loads(response.text)
-        return render_template('home.html', username=session['username'], cars=cars)
+        role = session['role']
+
+        if role == 'admin':
+            return render_template('admin/admin-dashboard.html', username=session['username'])
+        elif role == 'engineer':
+            return render_template('engineer/engineer-dashboard.html', username=session['username'])
+        elif role == 'manager':
+            return render_template('manager/manager-dashboard.html', username=session['username'])
+        else:
+            response = requests.get("http://localhost:8080/api/getcars")
+            print(response)
+            cars = json.loads(response.text)
+            return render_template('home.html', username=session['username'], cars=cars)
     # users is not loggedin redirect to login page
     return redirect(url_for('site.login'))
 
@@ -226,6 +237,8 @@ def register():
             msg = 'First name or last name must contain only characters and numbers!'
         elif not fname or not lname or not username or not password:
             msg = 'Please fill out the form!'
+        elif len(password) < 8:
+            msg = 'Password should be atleast 8 characters.'
         else:
             response = ''
             # make a api call to save the user.
