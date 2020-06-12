@@ -288,8 +288,6 @@ def uploadimg():
     target = os.path.join(path,'Facial recognition/dataset')
     email = session['username']
     target = target+'/'+email
-    # app_root, 'C:/Users\meetp\OneDrive\Desktop\IotAssigment2\src\Facial recognition\dataset/')
-    # print(target)
 
     if not os.path.isdir(target):
         os.mkdir(target)
