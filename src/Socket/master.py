@@ -66,9 +66,9 @@ class master:
 
     def __update_report_status(self, reportid, status, conn):
         """ This function is used to update the status of the selected report id
-        :param (str)reportid, (str)status, (connection)conn
+        :param (int)reportid, (str)status, (connection)conn
         """
-        response = requests.get("http://localhost:8080/api/reportstatus/"+reportid+"/"+status)
+        response = requests.get("http://localhost:8080/api/reportstatus/"+str(reportid)+"/"+status)
         data = response.json()
         socket_utils.sendJson(conn, { "Response": data['message'] })
 

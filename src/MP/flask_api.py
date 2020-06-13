@@ -621,10 +621,11 @@ def update_report_status(reportid, status):
     reportCar = Reportcar.query.get(reportid)
     reportCar.status = status
 
-    if(status=="repaired"):
+    if(status=="fixed"):
         car = reportCar.car
         car.isavailable = True
 
+    db.session.commit()
     return jsonify({"message": "Status changed to " + status})
 
 
