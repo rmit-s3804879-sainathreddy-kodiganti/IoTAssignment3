@@ -303,7 +303,7 @@ def edit_user():
     macaddress = request.form['macaddress']
 
     response = requests.post("http://localhost:8080/api/edituser", {
-                                     "userid":userid, "email": username, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
+                                     "userid": userid, "email": username, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
     data = json.loads(response.text)
 
     if data is None:
@@ -312,7 +312,6 @@ def edit_user():
         flash("User updated sucessfully.")
     return redirect(url_for('site.home'))
 
-    
 
 @site.route('/deluser', methods=['POST'])
 def del_user():
@@ -333,6 +332,80 @@ def del_user():
         else:
             flash("User deleted sucessfully.")
         return redirect(url_for('site.home'))
+
+
+@site.route('/addcar', methods=['POST'])
+def add_car():
+    """This function is used for adding a new car to db.
+    :param: (str)make, (str)bodytype, (str)color, (float)cost, (int)seats, (str)location
+    :return: redirection with success/failure string message 
+    """
+    make = request.form['make']
+    bodytype = request.form['body']
+    color = request.form['color']
+    seats = request.form['seats']
+    location = request.form['location']
+    costperhour = request.form['cost']
+
+    response = requests.post("http://localhost:8080/api/addcar", {'make':make, 'bodytype':bodytype, 'color':color, 'seats':seats, 'location':location, 'costperhour':costperhour})
+    data = json.loads(response.text)
+    
+    if data is None:
+        flash("Failed to save the car.")
+    else:
+        flash("New car added in db.")
+    return redirect(url_for('site.home'))
+
+
+@site.route('/editcar', methods=['POST'])
+def edit_car():
+    """This function is used for updating new car to db.
+    :param: (str)make, (str)bodytype, (str)color, (float)cost, (int)seats, (str)location
+    :return: redirection with success/failure string message 
+    """
+    carid = request.form['carid']
+    make = request.form['make']
+    bodytype = request.form['body']
+    color = request.form['color']
+    seats = request.form['seats']
+    location = request.form['location']
+    costperhour = request.form['cost']
+
+    response = requests.post("http://localhost:8080/api/editcar", {'carid':carid, 'make':make, 'bodytype':bodytype, 'color':color, 'seats':seats, 'location':location, 'costperhour':costperhour})
+    data = json.loads(response.text)
+    
+    if data is None:
+        flash("Failed to update the car.")
+    else:
+        flash("Car updated in db.")
+    return redirect(url_for('site.home'))
+
+    print("Test")
+
+
+@site.route('/delcar', methods=['POST'])
+def delete_car():
+    """This function is used for deleting a  user.
+    :param: (str)userid in POST request
+    :return: redirection with success/failure string message 
+    """
+    if 'loggedin' in session:
+        carid = request.form['carid']
+
+        response = requests.delete(
+            "http://localhost:8080/api/delcar/"+str(carid))
+
+        car = json.loads(response.text)
+
+        if car is None:
+            flash("Failed to delete the car.")
+        else:
+            flash("Car deleted sucessfully.")
+        return redirect(url_for('site.home'))
+
+@site.route('/reportcar', methods=['POST'])
+def report_car():
+    #TODO: implementation pending
 
 
 @site.route('/carslocation', methods=['GET'])

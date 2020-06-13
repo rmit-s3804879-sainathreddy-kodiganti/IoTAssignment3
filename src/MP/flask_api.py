@@ -339,6 +339,75 @@ def edit_user():
     return userSchema.jsonify(user)
 
 
+@api.route("/api/addcar", methods=["POST"])
+def add_car():
+    """This function/api end point creats a new car in db.
+    :param: None
+    :request param: (str) make, (str) bodytype, (str) color, (str) seats, (str) location, (str) costperhour
+    :return: dict{k,v}: User object for the newly created user or empty dict{}.
+    """
+
+    make = request.form["make"]
+    bodytype = request.form["bodytype"] 
+    color = request.form["color"]
+    seats = request.form["seats"]
+    location = request.form["location"]
+    costperhour = request.form["costperhour"]
+
+    # create a new Car object.
+    new_car = Car(make=make, bodytype=bodytype, color=color, seats=seats, location=location, costperhour=costperhour)
+
+    # add new car to db
+    db.session.add(new_car)
+    # commit the new add.
+    db.session.commit()
+
+    return carSchema.jsonify(new_car)
+
+
+@api.route("/api/editcar", methods=["POST"])
+def edit_car():
+    """This function/api end point creats a new car in db.
+    :param: None
+    :request param: (str) make, (str) bodytype, (str) color, (str) seats, (str) location, (str) costperhour
+    :return: dict{k,v}: User object for the newly created user or empty dict{}.
+    """
+    carid = request.form["carid"]
+    make = request.form["make"]
+    bodytype = request.form["bodytype"] 
+    color = request.form["color"]
+    seats = request.form["seats"]
+    location = request.form["location"]
+    costperhour = request.form["costperhour"]
+
+    # create a new Car object.
+    car = Car.query.get(carid)
+    car.make = make
+    car.bodytype = bodytype
+    car.color = color
+    car.seats = seats
+    car.location = location
+    car.costperhour = costperhour
+
+    # commit the new add.
+    db.session.commit()
+
+    return carSchema.jsonify(car)
+
+
+@api.route("/api/delcar/<id>", methods=["DELETE"])
+def del_car(id):
+    """Function to get delete a user by id.
+    :param: id: (number) numeric id of a user.
+    :return: dict{k,v}: user object 
+    """
+    car = Car.query.get(id)
+
+    db.session.delete(car)
+    db.session.commit()
+
+    return carSchema.jsonify(car)
+
 @api.route("/api/getcars", methods=["GET"])
 def getcars():
     """Function to get cars list.
@@ -444,12 +513,12 @@ def validate_bookings(bookingid, username, car_id):
     print(str(isValidBooking)+"----------------------------------------")
     return jsonify({"isValidBooking": isValidBooking})
 
+
 @api.route("/api/add_booking", methods=["POST"])
 def add_booking():
     """This api end point adds booking for a user.
     :return: (object): booking.
     """
-
     try:
         
         carid = request.form["carid"]
@@ -494,7 +563,14 @@ def get_cars_location():
 
     for car in cars:
         carid = car.carid
-        location = car.location.split(",")
+        locationstr = car.location
+
+        #skip cars without location.
+        if locationstr is None or locationstr == '':
+            continue
+        
+        #get lat and long.
+        location = locationstr.split(',')
         lat = float(location[0].strip())
         long = float(location[1].strip())
 
