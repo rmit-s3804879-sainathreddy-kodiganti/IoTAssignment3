@@ -64,7 +64,7 @@ class master:
         data = response.json()
         socket_utils.sendJson(conn, { "Response": data })
 
-    def __update_report_status(self, reportid, status):
+    def __update_report_status(self, reportid, status, conn):
         """ This function is used to update the status of the selected report id
         :param (str)reportid, (str)status, (connection)conn
         """
