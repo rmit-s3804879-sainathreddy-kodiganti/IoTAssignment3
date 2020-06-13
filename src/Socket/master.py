@@ -61,6 +61,9 @@ class master:
         response = requests.get("http://localhost:8080/api/engineers/"+car_id)
         data = response.json()
         print(data['macAddress'])
+        print(data['fname'])
+        print(data['issue'])
+        print(data['reportid'])
         socket_utils.sendJson(conn, { "Response": data['macAddress'] })
 
     def __receive_booking_details(self, username, booking_id, car_id, conn):

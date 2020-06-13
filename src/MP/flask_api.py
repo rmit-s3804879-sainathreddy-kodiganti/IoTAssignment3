@@ -619,9 +619,18 @@ def get_mac_address(carid):
     :param: carid: (string).
     :return: (object): car object 
     """
-    carlist = Car.query.all()
-    results = carsSchema.dump(carlist)
-    return jsonify(results)
+    reportCar = Reportcar.query.filter(Reportcar.carid == carid, Reportcar.status == "faulty").first()
+    result = {}
+    if(reportCar):
+        engineer = userSchema.dump(reportCar.engineer)
+        report = reportcarSchema.dump(reportCar)
+        result = {
+            "fname": engineer['fname'],
+            "macAddress": engineer['macaddress'],
+            "issue": report['issue'],
+            "reportid": report['reportid']
+        }
+    return jsonify(result)
 
 #TEST
 @api.route("/api/addevent", methods=["GET"])
