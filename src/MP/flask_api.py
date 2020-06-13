@@ -102,7 +102,7 @@ class Car(db.Model):
             self.carid, self.make, self.bodytype, self.color, self.seats, self.location, self.costperhour, self.isavailable
         )
 
-class Reportcars(db.Model):
+class Reportcar(db.Model):
     """
         Reportcars Model.
         The model corresponds to the reportcars table in database.
@@ -122,18 +122,18 @@ class Reportcars(db.Model):
         )
 
 # schema of booking with nested car object
-class ReportcarsSchema(ma.Schema):
+class ReportcarSchema(ma.Schema):
     """Reportcars Schema.
        The list of attributes to be displayed from the Reportcars Model as a response.
     """ 
     class Meta:
-        model = Reportcars
+        model = Reportcar
         # Fields to expose.
         fields = ("reportid", "carid", "issue", "status",
                   "engineername", "engineeremail", "macaddress")
 
-reportcarsSchema = ReportcarsSchema()
-reportcarsSchema = ReportcarsSchema(many=True)
+reportcarSchema = ReportcarSchema()
+reportcarsSchema = ReportcarSchema(many=True)
 
 class UserSchema(ma.Schema):
     """User Schema.
