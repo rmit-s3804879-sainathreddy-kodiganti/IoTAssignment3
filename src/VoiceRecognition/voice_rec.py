@@ -57,8 +57,7 @@ class voice_rec:
             try:
                 audio = r.listen(source, timeout =self.__TIMEOUT)
             except sr.WaitTimeoutError:
-                print("Listening timed out whilst waiting for phrase to start")
-                quit()
+                return "Listening timed out whilst waiting for phrase to start"
 
         # recognize speech using Google Speech Recognition
         try:
