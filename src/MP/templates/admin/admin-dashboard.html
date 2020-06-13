@@ -17,10 +17,10 @@
         <div class="col md-12">
             <!-- Display car rental history -->
             <div class="rentalist">
-                <h4>Rental History</h4>
+                <h5>Rental History</h5>
                 <hr>
                 <table id="myTable" class="table">
-                    <thead class="thead">
+                    <thead class="thead-dark">
                         <tr>
                             <th scope="col">Booking id</th>
                             <th scope="col">Car id</th>
@@ -50,14 +50,14 @@
 
             <!-- List of users -->
             <div class="userlist" style="margin-top: 50px;">
-                <h4>List of Users</h4>
+                <h5>List of Users</h5>
                 <hr>
                 <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
                     data-target="#addUserModal">
                     Add new user
                 </button>
                 <table id="myTable" class="table">
-                    <thead>
+                    <thead class="thead-dark">
                         <tr>
                             <th scope="col">user id</th>
                             <th scope="col">email</th>
@@ -217,14 +217,14 @@
 
             <!-- list of cars -->
             <div class="carlist" style="margin-top: 50px;">
-                <h4>List of Cars</h4>
+                <h5>List of Cars</h5>
                 <hr>
                 <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
                     data-target="#addCarModal">
                     Add new car
                 </button>
                 <table id="myTable" class="table">
-                    <thead>
+                    <thead class="thead-dark">
                         <tr>
                             <th scope="col">Car id</th>
                             <th scope="col">make</th>
@@ -604,6 +604,15 @@
                     }
                 });
 
+                //validation for reportCarForm
+                $("#reportCarForm").validate({
+                    rules: {
+                        issue: "required",
+                    },
+                    message: {
+                        issue: "Please enter issue/fault in a car.",
+                    }
+                });
 
             </script>
             {% endblock %}
