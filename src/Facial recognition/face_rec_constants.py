@@ -8,7 +8,7 @@ import pathlib
 
 # constants for recognise module
 __path = str(pathlib.Path(__file__).parent.absolute())
-CAM_IP_ADDR = "http://192.168.0.97:8080/video"
+CAM_IP_ADDR = "http://10.0.0.6:8080/video"
 FRAME_MATCH_COUNT = 7
 ENCODER= __path +"/encodings.pickle"
 RESOLUTION= 240
