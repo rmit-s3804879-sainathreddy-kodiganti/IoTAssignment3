@@ -70,7 +70,7 @@ class master:
         """
         response = requests.get("http://localhost:8080/api/reportstatus/"+reportid+"/"+status)
         data = response.json()
-        socket_utils.sendJson(conn, { "Response": data })
+        socket_utils.sendJson(conn, { "Response": data['message'] })
 
     def __receive_booking_details(self, username, booking_id, car_id, conn):
         """ This function is used to receive booking details
