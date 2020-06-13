@@ -94,12 +94,45 @@ class Car(db.Model):
     costperhour = db.Column(db.Float)
     isavailable = db.Column(db.Boolean, default=True)
     bookings = db.relationship('Booking', backref='car')
+    reportedissues = db.relationship('Reportcars', backref='car')
 
     def __repr__(self):
         return "<Car(carid='%s', make='%s', bodytype='%s', color='%s', seats='%s', location='%s', costperhour='%s', isavailable='%s')>" % (
             self.carid, self.make, self.bodytype, self.color, self.seats, self.location, self.costperhour, self.isavailable
         )
 
+class Reportcars(db.Model):
+    """
+        Reportcars Model.
+        The model corresponds to the reportcars table in database.
+    """
+    __tablename__ = "reportcars"
+    reportid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    carid = db.Column(db.Integer, db.ForeignKey('cars.carid'))
+    userid = db.Column(db.Integer, db.ForeignKey('users.userid'))
+    issue = db.Column(db.String(225))
+    reportdate = db.Column(db.DateTime)
+    status = db.Column(db.String(45))
+ 
+
+    def __repr__(self):
+        return "<Reportcars(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
+            self.reportid, self.carid, self.issue, self.status, self.engineername, self.engineeremail, self.macaddress
+        )
+
+# schema of booking with nested car object
+class ReportcarsSchema(ma.Schema):
+    """Reportcars Schema.
+       The list of attributes to be displayed from the Reportcars Model as a response.
+    """ 
+    class Meta:
+        model = Reportcars
+        # Fields to expose.
+        fields = ("reportid", "carid", "issue", "status",
+                  "engineername", "engineeremail", "macaddress")
+
+reportcarsSchema = ReportcarsSchema()
+reportcarsSchema = ReportcarsSchema(many=True)
 
 class UserSchema(ma.Schema):
     """User Schema.
