@@ -98,8 +98,9 @@ class agentApp:
             index = child.expect('Device '+mac_address+'.*', timeout=60)
             self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
             self.__print_to_console(('Report ID: {}').format(reportid))
-            self.__print_to_console(('Issue with the car: {}').format(issue))
-            self.__socket_obj.load_report_status(reportid, 'repairing')
+            self.__print_to_console(('Issue with the car: {}\n').format(issue))
+            message = self.__socket_obj.load_report_status(reportid, 'repairing')
+            self.__print_to_console(message)
             self.__show_bluetooth_exit(reportid)
 
         except pexpect.exceptions.TIMEOUT:
@@ -114,7 +115,8 @@ class agentApp:
 
         """
         choice_exit = input('Enter Q to lock the car and complete repair:  ')
-        self.__socket_obj.load_report_status(reportid, 'repaired')
+        message = self.__socket_obj.load_report_status(reportid, 'fixed')
+        self.__print_to_console(message)
         self.__print_to_console('Thanks for using the application')
 
     def __clear_console(self):
