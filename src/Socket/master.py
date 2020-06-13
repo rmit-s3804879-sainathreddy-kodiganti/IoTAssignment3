@@ -60,7 +60,6 @@ class master:
         """
         response = requests.get("http://localhost:8080/api/engineers/"+car_id)
         data = response.json()
-        data['macAddress'] = 'C0:A6:00:C3:05:7D'
         print(data['macAddress'])
         socket_utils.sendJson(conn, { "Response": data['macAddress'] })
 
