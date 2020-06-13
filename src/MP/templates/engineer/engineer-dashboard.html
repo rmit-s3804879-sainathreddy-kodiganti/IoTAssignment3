@@ -16,6 +16,7 @@
                 <th scope="col">status</th>
                 <th scope="col">issue</th>
                 <th scope="col">location</th>
+                <th scope="col">QR code</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,12 @@
                     <td>{{ rc['issue'] }}</td>
                     <td>
                         <form action="{{ url_for('site.carslocation') }}" method="POST">
+                            <input type="hidden" name="carid" value="{{rc['carid']}}">
+                            <input type="submit" class="btn btn-link" value="view">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('site.generate_qr') }}" method="POST">
                             <input type="hidden" name="carid" value="{{rc['carid']}}">
                             <input type="submit" class="btn btn-link" value="view">
                         </form>

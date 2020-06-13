@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block title %}QR Code{% endblock %}
+
+{% block content %}
+
+<div align="center">
+    <img src="{{qrfile}}" style="align-items: center;">
+</div>
+{% if msg != "" %}
+    <h4 style="text-align: center; color: red;">{{msg}}</h4>
+{% endif %}
+{% endblock %}
