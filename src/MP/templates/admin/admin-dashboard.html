@@ -1,13 +1,23 @@
 {% extends 'layout.html' %}
-
 {% block title %}Admin Dashboard{% endblock %}
-
 {% block content %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <div class="alert alert-warning">{{ message }}</div>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <h2>Admin Dashboard</h2>
 <hr>
 <div>
     <div class="row">
         <div class="col md-12">
+            <!-- Display car rental history -->
             <div class="rentalist">
                 <h4>Rental History</h4>
                 <hr>
@@ -38,8 +48,165 @@
                       </tbody>
                 </table>
             </div>
+            <!-- End of rental list -->
+
+            <!-- List of users -->
+            <div class="userlist" style="margin-top: 50px;">
+                <h4>List of Users</h4>
+                <hr>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#addUserModal">
+                    Add new user
+                  </button>
+                <table id="myTable" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">user id</th>   
+                            <th scope="col">email</th>                          
+                            <th scope="col">first name</th>
+                            <th scope="col">last name</th>
+                            <th scope="col">role</th>
+                            <th scope="col">mac</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users: %}
+                        <tr>
+                            <td>{{ user['userid'] }}</td>
+                            <td>{{ user['email'] }}</td>
+                            <td>{{ user['fname'] }}</td>
+                            <td>{{ user['lname'] }}</td>
+                            <td>{{ user['role'] }}</td>
+                            <td>{{ user['macaddress'] }}</td>
+                            <td>
+                                <button type="button" class="btn btn-link btn_editUserModal">
+                                    edit
+                                </button>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('site.del_user') }}" method="post">
+                                    <input type="hidden" name="userid" id="userid" value="{{ user['userid'] }}" >
+                                    <input type="submit" class="btn btn-link" value="delete" />
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Modal -->
+            <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form id="addUserForm" action="{{ url_for('site.register') }}" method="post">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">                        
+                            <div class="form-group">
+                              <label for="exampleInputEmail1">Email address</label>
+                              <input type="email" class="form-control form-control-sm" id="username" name="username" aria-describedby="emailHelp" placeholder="Enter email">
+                              <small id="emailHelp" class="form-text text-muted"></small>
+                            </div>
+                            <div class="form-group">
+                              <label >Password</label>
+                              <input type="password" class="form-control  form-control-sm" id="password" name="password" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <label >First name</label>
+                                <input type="text" class="form-control  form-control-sm" id="fname" name="fname" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <label >Last name</label>
+                                <input type="text" class="form-control  form-control-sm" id="lname" name="lname" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <label >Mac Address</label>
+                                <input type="text" class="form-control  form-control-sm" id="macaddress" name="macaddress" placeholder="macaddress">
+                            </div>
+                            <div class="form-group">
+                                <label >Role</label>
+                                <select class="form-control form-control-sm" name="role">
+                                    <option value="admin">Admin</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="engineer">Engineer</option>
+                                    <option value="customer">Customer</option>
+                                  </select>
+                            </div>                                                   
+                    </div>
+
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="save">
+                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                </form>
+                </div>
+                </div>
+            </div>
+
+            <!-- Update Modal -->
+            <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form id="editUserForm" action="{{ url_for('site.edit_user') }}" method="post">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">  
+                            <div class="form-group">
+                                <input type="hidden" class="form-control form-control-sm" id="edit-userid" name="userid">
+                            </div>                      
+                            <div class="form-group">
+                              <label >Email address</label>
+                              <input type="email" class="form-control form-control-sm" id="edit-username" name="username" aria-describedby="emailHelp" placeholder="Enter email">
+                              <small id="emailHelp" class="form-text text-muted"></small>
+                            </div>                        
+                            <div class="form-group">
+                                <label >First name</label>
+                                <input type="text" class="form-control  form-control-sm" id="edit-fname" name="fname" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <label >Last name</label>
+                                <input type="text" class="form-control  form-control-sm" id="edit-lname" name="lname" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <label >Mac Address</label>
+                                <input type="text" class="form-control  form-control-sm" id="edit-macaddress" name="macaddress" placeholder="macaddress">
+                            </div>
+                            <div class="form-group">
+                                <label >Role</label>
+                                <select class="form-control form-control-sm" name="role" id="edit-role">
+                                    <option value="admin">Admin</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="engineer">Engineer</option>
+                                    <option value="customer">Customer</option>
+                                  </select>
+                            </div>                                                   
+                    </div>
+
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="save">
+                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                </form>
+                </div>
+                </div>
+            </div>
+
+            <!-- End of users section -->
 
 
+            <!-- list of cars -->
             <div class="carlist" style="margin-top: 50px;">
                 <h4>List of Cars</h4>
                 <hr>
@@ -89,55 +256,97 @@
                 </table>
             </div>
 
-            <div class="userlist" style="margin-top: 50px;">
-                <h4>List of Users</h4>
-                <hr>
-                <button>Add new user</button>
-                <table id="myTable" class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">user id</th>                            
-                            <th scope="col">first name</th>
-                            <th scope="col">last name</th>
-                            <th scope="col">role</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users: %}
-                        <tr>
-                            <td>{{ user['userid'] }}</td>
-                            <td>{{ user['fname'] }}</td>
-                            <td>{{ user['lname'] }}</td>
-                            <td>{{ user['role'] }}</td>
-                            <td>
-                                <form action="{{ url_for('site.carbooking') }}" method="post">
-                                    <input type="hidden" name="userid" id="userid" value="{{ user['userid'] }}" >
-                                    <input type="submit" value="edit" />
-                                </form>                                
-                            </td>
-                            <td>
-                                <form action="{{ url_for('site.carbooking') }}" method="post">
-                                    <input type="hidden" name="userid" id="userid" value="{{ user['userid'] }}" >
-                                    <input type="submit" value="delete" />
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            <!-- End of car section -->
 
-            <script>
-                $(document).ready(function () {
-                    $('.table').DataTable({
-                        "autoFill": true,
-                        "scrollY":        "250px",
-                        "scrollCollapse": true,
-                        "paging":         false
-                    });
-                });
 
-            </script>
+            
+<!-- Java script for table -->
+<!-- <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.table').DataTable({
+            "autoFill": true,
+            "scrollY":        "250px",
+            "scrollCollapse": true,
+            "paging":         false
+        });
+
+        $('.btn_editUserModal').on('click', function(){
+            $('#editUserModal').modal('show');
+            console.log("opened");
+
+            $tr = $(this).closest('tr');
+
+            var data = $tr.children('td').map(function(){
+                return $(this).text();
+            }).get();
+
+            console.log(data);
+            $('#edit-userid').val(data[0]);
+            $('#edit-username').val(data[1]);
+            $('#edit-fname').val(data[2]);
+            $('#edit-lname').val(data[3]);
+            $('#edit-role').val(data[4]);
+            $('#edit-macaddress').val(data[5]);
+        });
+    });  
+
+    
+
+    
+
+    /*
+    $('#addUserModal').on('show.bs.modal', function (e) {
+        console.log(">>>>>>>>>>>>");
+        //var data = button.data('mydata');
+        //console.log(data);
+    });
+    */
+    
+    $("#addUserForm").validate({
+        rules:{
+            username: "required",
+            fname: "required",
+            lname: "required",
+            password: {
+                required: true,
+                minlength: 8
+            }
+        },
+        message:{
+            username: {
+                required: "Please enter email.",
+                email: true
+            },
+            fname: "Please enter first name.",
+            lname: "Please enter last name.",
+            password:{
+                required:"Please enter password.",
+                minlength:"Password should be atleast 8 characters."
+            } 
+        }        
+    });
+
+    $("#editUserForm").validate({
+        rules:{
+            username: "required",
+            fname: "required",
+            lname: "required"
+        },
+        message:{
+            username: {
+                required: "Please enter email.",
+                email: true
+            },
+            fname: "Please enter first name.",
+            lname: "Please enter last name.",
+        }        
+    });
+
+    
+
+</script>
 {% endblock %}
