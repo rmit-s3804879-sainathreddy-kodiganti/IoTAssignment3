@@ -78,29 +78,22 @@ class agentApp:
         if choice_main == '1':
             self.__unlock_car()
         elif choice_main == '2':
-            self.__unclock_bluetooth()
+            self.__unlock_bluetooth()
         elif choice_main == '3':
             self.quit()
 
-    def __unclock_bluetooth(self):
+    def __unlock_bluetooth(self):
         """This function is used for automatic identification system by using bluetooth
 
         """
-        results = open("scan_results.txt", 'w')
-        child = pexpect.spawn("bluetoothctl")
-        child.send("scan on\n")
-        bdaddrs = []
-
         try:
+            child = pexpect.spawn("bluetoothctl")
+            child.send("scan on\n")
             while True:
-                # TODO: Get array of MAC Addresses of Engineers from API
-                mac_address_array = ['C0:A6:00:C3:05:7D', '5C:99:60:C4:49:2C']
-
-                regx_array = []
-                for mac_address in mac_address_array:
-                    regx_array.append('Device '+mac_address+'.*')
-                index = child.expect(regx_array, timeout=None)
-                print('Engineer '+str(index+1)+' Found!')
+                mac_address = self.__socket_obj.get_mac_address(self.__car_id)
+                print("Finding :"+mac_address)
+                index = child.expect('Device '+mac_address+'.*', timeout=None)
+                print('Engineer Found : '+mac_address)
 
                 # TODO: Unlock car for the engineer
         except KeyboardInterrupt:
