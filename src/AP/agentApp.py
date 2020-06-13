@@ -90,18 +90,23 @@ class agentApp:
             child = pexpect.spawn("bluetoothctl")
             child.send("scan on\n")
             engineer_details = self.__socket_obj.load_engineer_details(self.__car_id)
-            mac_address = engineer_details['macAddress']
-            username = engineer_details['fname']
-            issue = engineer_details['issue']
-            reportid = engineer_details['reportid']
-            self.__print_to_console('Searching for Engineer...')
-            index = child.expect('Device '+mac_address+'.*', timeout=60)
-            self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
-            self.__print_to_console(('Report ID: {}').format(reportid))
-            self.__print_to_console(('Issue with the car: {}\n').format(issue))
-            message = self.__socket_obj.load_report_status(reportid, 'repairing')
-            self.__print_to_console(message)
-            self.__show_bluetooth_exit(reportid)
+            if(engineer_details):
+                mac_address = engineer_details['macAddress']
+                username = engineer_details['fname']
+                issue = engineer_details['issue']
+                reportid = engineer_details['reportid']
+                self.__print_to_console('Searching for Engineer...')
+                index = child.expect('Device '+mac_address+'.*', timeout=60)
+                self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
+                self.__print_to_console(('Report ID: {}').format(reportid))
+                self.__print_to_console(('Issue with the car: {}\n').format(issue))
+                message = self.__socket_obj.load_report_status(reportid, 'repairing')
+                self.__print_to_console(message)
+                self.__show_bluetooth_exit(reportid)
+            else:
+                self.__print_to_console('The vehicle is not assign to an Engineer for repair!\n')
+                self.__print_to_console(self.__welcome_message)
+                self.__handle_selection()
 
         except pexpect.exceptions.TIMEOUT:
             print("Bluetooth Timeout!")
