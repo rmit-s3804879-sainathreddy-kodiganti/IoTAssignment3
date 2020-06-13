@@ -103,6 +103,7 @@ class Reportcar(db.Model):
         return "<Reportcar(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
             self.reportid, self.carid, self.issue, self.status, self.engineername, self.engineeremail, self.macaddress
         )
+    
 
 # schema of booking with nested car object
 class ReportcarSchema(ma.Schema):
@@ -112,8 +113,7 @@ class ReportcarSchema(ma.Schema):
     class Meta:
         model = Reportcar
         # Fields to expose.
-        fields = ("reportid", "carid", "issue", "status",
-                  "engineername", "engineeremail", "macaddress")
+        fields = ("reportid", "carid", "userid", "issue", "status", "reportdate")
 
 reportcarSchema = ReportcarSchema()
 reportcarsSchema = ReportcarSchema(many=True)
@@ -420,6 +420,18 @@ def report_car():
 
     return reportcarSchema.jsonify(report)
 
+
+@api.route("/api/reportedcars/<userid>", methods=["GET"])
+def reported_cars(userid):
+    """This function/api end point gets faulty car for the loggedin engineer which has been reported by admin.
+    :request param: (int) userid
+    :return: dict{k,v}: ReportCars object.
+    """
+    faultycars = Reportcar.query.filter(Reportcar.userid == userid, Reportcar.status == 'faulty').all()
+    result = reportcarsSchema.dump(faultycars)
+    return jsonify(result)
+
+
 @api.route("/api/cars/<carid>", methods=["GET"])
 def get_cars_by_id(carid):
     """Function to get car details.
@@ -578,6 +590,27 @@ def get_cars_location():
         car_locations.append([carid, lat, long])
 
     return jsonify(car_locations)
+
+
+@api.route("/api/carlocation/<carid>", methods=["GET"])
+def get_car_location(carid):
+    """This function/api end point gets the location of the specified car.
+    :param:  (int)carid
+    :return: dict{k,v}: latitude and longititude information for each car along with car id.
+    """
+    car = Car.query.get(carid)
+    carid = car.carid
+    locationstr = car.location
+    
+    #get lat and long.
+    location = locationstr.split(',')
+    lat = float(location[0].strip())
+    long = float(location[1].strip())
+
+    #just to maintain the code consistency with google map api
+    car_locations = [[carid, lat, long]]
+    return jsonify(car_locations)
+
 
 
 @api.route("/api/engineers/<carid>", methods=["GET"])
