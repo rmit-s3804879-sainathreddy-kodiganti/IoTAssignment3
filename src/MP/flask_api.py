@@ -49,6 +49,7 @@ class User(db.Model):
     role = db.Column(db.String(200))
     macaddress = db.Column(db.String(200))
     bookings = db.relationship("Booking", backref="customer")
+    reportedissues = db.relationship("Reportcars", backref="engineer")
 
     def __repr__(self):
         return "<User(userid='%s', email='%s', password='%s', fname='%s', lname='%s')>" % (
