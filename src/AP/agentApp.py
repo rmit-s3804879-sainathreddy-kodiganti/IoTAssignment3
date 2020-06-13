@@ -89,21 +89,33 @@ class agentApp:
         try:
             child = pexpect.spawn("bluetoothctl")
             child.send("scan on\n")
-            data = self.__socket_obj.load_mac_address(self.__car_id)
-            print(data['macAddress'])
-            print(data['fname'])
-            print(data['issue'])
-            print(data['reportid'])
-            mac_address = data['macAddress']
-            print("Finding :"+mac_address)
+            engineer_details = self.__socket_obj.load_engineer_details(self.__car_id)
+            mac_address = engineer_details['macAddress']
+            username = engineer_details['fname']
+            issue = engineer_details['issue']
+            reportid = engineer_details['reportid']
+            self.__print_to_console('Searching for Engineer...')
             index = child.expect('Device '+mac_address+'.*', timeout=60)
-            print('Engineer Found : '+mac_address)
+            self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
+            self.__print_to_console(('Report ID: {}').format(reportid))
+            self.__print_to_console(('Issue with the car: {}').format(issue))
+            self.__socket_obj.load_report_status(reportid, 'repairing')
+            self.__show_bluetooth_exit(reportid)
 
-                # TODO: Unlock car for the engineer
+        except pexpect.exceptions.TIMEOUT:
+            print("Bluetooth Timeout!")
+            self.__display_welcome_message()
         except KeyboardInterrupt:
             child.close()
             results.close()
 
+    def __show_bluetooth_exit(self, reportid):
+        """This fucntion is used to display the exit options for bluetooth.
+
+        """
+        choice_exit = input('Enter Q to lock the car and complete repair:  ')
+        self.__socket_obj.load_report_status(reportid, 'repaired')
+        self.__print_to_console('Thanks for using the application')
 
     def __clear_console(self):
         """This function is used to Clear the terminal screen.

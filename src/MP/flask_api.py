@@ -612,6 +612,21 @@ def get_car_location(carid):
     return jsonify(car_locations)
 
 
+@api.route("/api/reportstatus/<reportid>/<status>", methods=["GET"])
+def update_report_status(reportid, status):
+    """Function to get mac address.
+    :param: reportid: (string), status: (string).
+    :return: (object): object with validation message.
+    """
+    reportCar = Reportcar.query.get(reportid)
+    reportCar.status = status
+
+    if(status=="repaired"):
+        car = reportCar.car
+        car.isavailable = True
+
+    return jsonify({"message": "Status changed to " + status})
+
 
 @api.route("/api/engineers/<carid>", methods=["GET"])
 def get_mac_address(carid):

@@ -51,14 +51,24 @@ class master:
                         self.__receive_lock_details(data["lock_time"], data["car_id"], data["duration"], conn)
                     elif(req_type == "load_pickle" ):
                         self.__receive_pickle_update_req(conn)
-                    elif(req_type == "get_mac_address" ):
-                        self.__get_mac_address(data["car_id"], conn)
+                    elif(req_type == "get_engineer_details" ):
+                        self.__get_engineer_details(data["car_id"], conn)
+                    elif(req_type == "update_report_status" ):
+                        self.__update_report_status(data["reportid"], data["status"], conn)
                     
-    def __get_mac_address(self, car_id, conn):
+    def __get_engineer_details(self, car_id, conn):
         """ This function is used to receive MAC address of the assigned enginner
         :param (str)car_id, (connection)conn
         """
         response = requests.get("http://localhost:8080/api/engineers/"+car_id)
+        data = response.json()
+        socket_utils.sendJson(conn, { "Response": data })
+
+    def __update_report_status(self, reportid, status):
+        """ This function is used to update the status of the selected report id
+        :param (str)reportid, (str)status, (connection)conn
+        """
+        response = requests.get("http://localhost:8080/api/reportstatus/"+reportid+"/"+status)
         data = response.json()
         socket_utils.sendJson(conn, { "Response": data })
 
