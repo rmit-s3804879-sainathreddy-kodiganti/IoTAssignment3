@@ -102,38 +102,38 @@ class Car(db.Model):
             self.carid, self.make, self.bodytype, self.color, self.seats, self.location, self.costperhour, self.isavailable
         )
 
-class Reportcars(db.Model):
-    """
-        Reportcars Model.
-        The model corresponds to the reportcars table in database.
-    """
-    __tablename__ = "reportcars"
-    reportid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    carid = db.Column(db.Integer, db.ForeignKey('cars.carid'))
+class Reportcars(db.Model):
+    """
+        Reportcars Model.
+        The model corresponds to the reportcars table in database.
+    """
+    __tablename__ = "reportcars"
+    reportid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    carid = db.Column(db.Integer, db.ForeignKey('cars.carid'))
     userid = db.Column(db.Integer, db.ForeignKey('users.userid'))
-    issue = db.Column(db.String(225))
+    issue = db.Column(db.String(225))
     reportdate = db.Column(db.DateTime)
-    status = db.Column(db.String(45))
+    status = db.Column(db.String(45))
  
 
-    def __repr__(self):
-        return "<Reportcars(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
-            self.reportid, self.carid, self.issue, self.status, self.engineername, self.engineeremail, self.macaddress
-        )
+    def __repr__(self):
+        return "<Reportcars(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
+            self.reportid, self.carid, self.issue, self.status, self.engineername, self.engineeremail, self.macaddress
+        )
 
-# schema of booking with nested car object
-class ReportcarsSchema(ma.Schema):
-    """Reportcars Schema.
-       The list of attributes to be displayed from the Reportcars Model as a response.
-    """ 
-    class Meta:
-        model = Reportcars
-        # Fields to expose.
-        fields = ("reportid", "carid", "issue", "status",
-                  "engineername", "engineeremail", "macaddress")
+# schema of booking with nested car object
+class ReportcarsSchema(ma.Schema):
+    """Reportcars Schema.
+       The list of attributes to be displayed from the Reportcars Model as a response.
+    """ 
+    class Meta:
+        model = Reportcars
+        # Fields to expose.
+        fields = ("reportid", "carid", "issue", "status",
+                  "engineername", "engineeremail", "macaddress")
 
-reportcarsSchema = ReportcarsSchema()
-reportcarsSchema = ReportcarsSchema(many=True)
+reportcarsSchema = ReportcarsSchema()
+reportcarsSchema = ReportcarsSchema(many=True)
 
 class UserSchema(ma.Schema):
     """User Schema.
@@ -579,6 +579,15 @@ def get_cars_location():
     return jsonify(car_locations)
 
 
+@api.route("/api/engineers/<carid>", methods=["GET"])
+def get_mac_address(carid):
+    """Function to get mac address.
+    :param: carid: (string).
+    :return: (object): car object 
+    """
+    carlist = Car.query.all()
+    results = carsSchema.dump(carlist)
+    return jsonify(results)
 
 #TEST
 @api.route("/api/addevent", methods=["GET"])
