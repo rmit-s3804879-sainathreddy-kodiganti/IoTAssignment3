@@ -406,6 +406,7 @@ def delete_car():
 @site.route('/reportcar', methods=['POST'])
 def report_car():
     #TODO: implementation pending
+    print("Test")    
 
 
 @site.route('/carslocation', methods=['GET'])
