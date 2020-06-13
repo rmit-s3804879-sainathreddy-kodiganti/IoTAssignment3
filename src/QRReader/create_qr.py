@@ -37,5 +37,5 @@ class create_qr:
             return is_QR_Ready
 
 ###remove this ####
-qrObj = create_qr()
-print(qrObj.start("hello"))
+# qrObj = create_qr()
+# print(qrObj.start("hello"))
