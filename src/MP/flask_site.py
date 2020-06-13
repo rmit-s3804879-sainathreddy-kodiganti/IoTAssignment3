@@ -30,15 +30,11 @@ else:
     print(">>>Import create_qr succeeded")
 
 
-# from encode import encode
-
 app = Flask(__name__)
 site = Blueprint("site", __name__)
 
 app_root = os.path.dirname(os.path.abspath(__file__))
 
-
-# this will be the login page, we need to use both GET and POST requests
 
 
 @site.route('/', methods=['GET', 'POST'])
@@ -467,11 +463,6 @@ def uploadimg():
         destination = "/".join([target, filename])
         print(destination)
         file.save(destination)
-
-    # encode the image
-    # en = encode()
-    # en.run(target)
-
     return render_template("imguploaded.html")
 
 
@@ -491,9 +482,7 @@ def generate_qr():
             #source and destination
             src = os.path.join(target, filename)            
             dest = "static/img/qr.jpg"
-            # shutil.copyfile(src_dir, dst_dir)
             filePath = shutil.copyfile(src, dest)
-            print("x : ", str(filePath))
             return render_template("/engineer/qrcode.html", qrfile=filePath, msg="")
         else:
             return render_template("/engineer/qrcode.html", qrfile="", msg="Failed to generate QR Code.")
