@@ -238,20 +238,21 @@ def get_user_password(password):
 def add_user():
     """This function/api end point creats a new user in db.
     :param: None
-    :request param: (str) email, (str) password, (str) fname, (str) lname
+    :request param: (str) email, (str) password, (str) fname, (str) lname, (str) macaddress, (str) role
     :return: dict{k,v}: User object for the newly created user or empty dict{}.
     """
 
     email = request.form["email"]
-    password = request.form["password"]
- 
+    password = request.form["password"] 
     fname = request.form["fname"]
     lname = request.form["lname"]
+    macaddress = request.form["macaddress"]
+    role = request.form["role"]
 
     password_hash = generate_password_hash(password, method='sha256', salt_length=8)
     # create a new User object.
     new_user = User(email=email, password=password_hash,
-                    fname=fname, lname=lname)
+                    fname=fname, lname=lname, macaddress=macaddress, role=role)
 
     # add new user to db
     db.session.add(new_user)
@@ -259,6 +260,49 @@ def add_user():
     db.session.commit()
 
     return userSchema.jsonify(new_user)
+
+
+@api.route("/api/deluser/<id>", methods=["DELETE"])
+def del_user(id):
+    """Function to get delete a user by id.
+    :param: id: (number) numeric id of a user.
+    :return: dict{k,v}: user object 
+    """
+    user = User.query.get(id)
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return userSchema.jsonify(user)
+
+
+@api.route("/api/edituser", methods=["POST"])
+def edit_user():
+    """This function/api end point edits a user in db.
+    :param: None
+    :request param: (str) email, (str) password, (str) fname, (str) lname, (str) macaddress, (str) role
+    :return: dict{k,v}: User object for the newly created user or empty dict{}.
+    """
+    userid =  request.form["userid"]
+    email = request.form["email"]
+    fname = request.form["fname"]
+    lname = request.form["lname"]
+    macaddress = request.form["macaddress"]
+    role = request.form["role"]
+
+    print(userid, " | ",email," | ", fname," | ", lname, " | ",macaddress," | ", role)
+
+    user = User.query.get(userid)
+    user.email = email
+    user.fname = fname
+    user.lname = lname
+    user.macaddress = macaddress
+    user.role = role
+
+    # commit the new add.
+    db.session.commit()
+
+    return userSchema.jsonify(user)
 
 
 @api.route("/api/getcars", methods=["GET"])

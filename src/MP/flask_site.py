@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, request, jsonify, render_template, redirect, url_for, session, json, jsonify, make_response, flash
+from flask import Flask, flash, Blueprint, request, jsonify, render_template, redirect, url_for, session, json, jsonify, make_response, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
@@ -44,7 +44,7 @@ def login():
         # api call to save the user.
         response = requests.post(
             "http://localhost:8080/api/login", {"email": username, "password": password})
-        print(response)
+        #print(response)
         data = json.loads(response.text)
 
         # If account exists in users table in out database
@@ -234,9 +234,16 @@ def register():
         lname = request.form['lname']
         username = request.form['username']
         password = request.form['password']
-        encrypted_password = generate_password_hash(
-            password, method='sha256', salt_length=8)
 
+        if 'loggedin' in session and session['role'] == 'admin':
+            print(">>>>> Identified as admin")
+            role = request.form['role']
+            macaddress = request.form['macaddress']
+        else:
+            role = 'customer'
+            macaddress = ''
+
+        #check if user exists
         response = ''
         try:
             response = requests.get(
@@ -260,10 +267,11 @@ def register():
         elif len(password) < 8:
             msg = 'Password should be atleast 8 characters.'
         else:
+            print(">>> Inside else")
             response = ''
             # make a api call to save the user.
             response = requests.post("http://localhost:8080/api/adduser", {
-                                     "email": username, "password": password, "fname": fname, "lname": lname})
+                                     "email": username, "password": password, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
             data = json.loads(response.text)
 
             # check if response data is valid
@@ -272,10 +280,59 @@ def register():
     elif request.method == 'POST':
         # Form is empty... (no POST data)
         msg = 'Please fill out the form!'
+
+    if 'loggedin' in session and session['role'] == 'admin':
+        flash(msg)
+        return redirect(url_for('site.home'))
+
     # Show registration form with message (if any)
     return render_template('register.html', msg=msg)
 
-# this will be the home page, only accessible for loggedin users
+
+@site.route('/edituser', methods=['POST'])
+def edit_user():
+    """This function is used for updating a  user.
+    :param: multiple params in POST request
+    :return: redirection with success/failure string message 
+    """
+    userid = request.form['userid']
+    fname = request.form['fname']
+    lname = request.form['lname']
+    username = request.form['username']
+    role = request.form['role']
+    macaddress = request.form['macaddress']
+
+    response = requests.post("http://localhost:8080/api/edituser", {
+                                     "userid":userid, "email": username, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
+    data = json.loads(response.text)
+
+    if data is None:
+        flash("Failed to update the user.")
+    else:
+        flash("User updated sucessfully.")
+    return redirect(url_for('site.home'))
+
+    
+
+@site.route('/deluser', methods=['POST'])
+def del_user():
+    """This function is used for deleting a  user.
+    :param: (str)userid in POST request
+    :return: redirection with success/failure string message 
+    """
+    if 'loggedin' in session:
+        userid = request.form['userid']
+
+        response = requests.delete(
+            "http://localhost:8080/api/deluser/"+str(userid))
+
+        acc = json.loads(response.text)
+
+        if acc is None:
+            flash("Failed to delete the user.")
+        else:
+            flash("User deleted sucessfully.")
+        return redirect(url_for('site.home'))
 
 
 @site.route('/carslocation', methods=['GET'])
@@ -288,7 +345,6 @@ def carslocation():
     if 'loggedin' in session:
 
         response = requests.get("http://localhost:8080/api/carslocation")
-        print(response.text)
         locations = json.loads(response.text)
 
         # users is loggedin show them the home page
