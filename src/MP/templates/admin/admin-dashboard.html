@@ -3,13 +3,11 @@
 {% block content %}
 
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
+{% if messages %}
     {% for message in messages %}
-      <div class="alert alert-warning">{{ message }}</div>
+        <div class="alert alert-info" role="alert">{{ message }}</div>
     {% endfor %}
-    </ul>
-  {% endif %}
+{% endif %}
 {% endwith %}
 
 <h2>Admin Dashboard</h2>
@@ -24,28 +22,28 @@
                 <table id="myTable" class="table">
                     <thead class="thead">
                         <tr>
-                          <th scope="col">Booking id</th>
-                          <th scope="col">Car id</th>
-                          <th scope="col">Car</th>
-                          <th scope="col">Color</th>
-                          <th scope="col">Cost/Hr</th>
-                          <th scope="col">From</th>
-                          <th scope="col">To</th>
+                            <th scope="col">Booking id</th>
+                            <th scope="col">Car id</th>
+                            <th scope="col">Car</th>
+                            <th scope="col">Color</th>
+                            <th scope="col">Cost/Hr</th>
+                            <th scope="col">From</th>
+                            <th scope="col">To</th>
                         </tr>
-                      </thead>
-                      <tbody>
-                      {% for booking in bookings: %}
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings: %}
                         <tr>
-                          <td>{{ booking['bookingid'] }}</td>
-                          <td>{{ booking['car']['carid'] }}</td>
-                          <td>{{ booking['car']['make'] }}</td>
-                          <td>{{ booking['car']['color'] }}</td>
-                          <td>${{ booking['car']['costperhour'] }}</td>
-                          <td>{{ booking['fromdate'] }}</td>
-                          <td>{{ booking['todate'] }}</td>
+                            <td>{{ booking['bookingid'] }}</td>
+                            <td>{{ booking['car']['carid'] }}</td>
+                            <td>{{ booking['car']['make'] }}</td>
+                            <td>{{ booking['car']['color'] }}</td>
+                            <td>${{ booking['car']['costperhour'] }}</td>
+                            <td>{{ booking['fromdate'] }}</td>
+                            <td>{{ booking['todate'] }}</td>
                         </tr>
-                      {% endfor %}
-                      </tbody>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
             <!-- End of rental list -->
@@ -54,20 +52,21 @@
             <div class="userlist" style="margin-top: 50px;">
                 <h4>List of Users</h4>
                 <hr>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#addUserModal">
+                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
+                    data-target="#addUserModal">
                     Add new user
-                  </button>
+                </button>
                 <table id="myTable" class="table">
                     <thead>
                         <tr>
-                            <th scope="col">user id</th>   
-                            <th scope="col">email</th>                          
+                            <th scope="col">user id</th>
+                            <th scope="col">email</th>
                             <th scope="col">first name</th>
                             <th scope="col">last name</th>
                             <th scope="col">role</th>
                             <th scope="col">mac</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
+                            <th scope="col">edit</th>
+                            <th scope="col">delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,7 +85,7 @@
                             </td>
                             <td>
                                 <form action="{{ url_for('site.del_user') }}" method="post">
-                                    <input type="hidden" name="userid" id="userid" value="{{ user['userid'] }}" >
+                                    <input type="hidden" name="userid" id="userid" value="{{ user['userid'] }}">
                                     <input type="submit" class="btn btn-link" value="delete" />
                                 </form>
                             </td>
@@ -96,110 +95,120 @@
                 </table>
             </div>
 
-            <!-- Add Modal -->
-            <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <!-- Add User Modal -->
+            <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <form id="addUserForm" action="{{ url_for('site.register') }}" method="post">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">User</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body">                        
-                            <div class="form-group">
-                              <label for="exampleInputEmail1">Email address</label>
-                              <input type="email" class="form-control form-control-sm" id="username" name="username" aria-describedby="emailHelp" placeholder="Enter email">
-                              <small id="emailHelp" class="form-text text-muted"></small>
+                    <div class="modal-content">
+                        <form id="addUserForm" action="{{ url_for('site.register') }}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                            <div class="form-group">
-                              <label >Password</label>
-                              <input type="password" class="form-control  form-control-sm" id="password" name="password" placeholder="Password">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Email address</label>
+                                    <input type="email" class="form-control form-control-sm" id="username"
+                                        name="username" aria-describedby="emailHelp" placeholder="Enter email">
+                                    <small id="emailHelp" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input type="password" class="form-control  form-control-sm" id="password"
+                                        name="password">
+                                </div>
+                                <div class="form-group">
+                                    <label>First name</label>
+                                    <input type="text" class="form-control  form-control-sm" id="fname" name="fname">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last name</label>
+                                    <input type="text" class="form-control  form-control-sm" id="lname" name="lname">
+                                </div>
+                                <div class="form-group">
+                                    <label>Mac Address</label>
+                                    <input type="text" class="form-control  form-control-sm" id="macaddress"
+                                        name="macaddress">
+                                </div>
+                                <div class="form-group">
+                                    <label>Role</label>
+                                    <select class="form-control form-control-sm" name="role">
+                                        <option value="admin">Admin</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="engineer">Engineer</option>
+                                        <option value="customer">Customer</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label >First name</label>
-                                <input type="text" class="form-control  form-control-sm" id="fname" name="fname" placeholder="Password">
-                            </div>
-                            <div class="form-group">
-                                <label >Last name</label>
-                                <input type="text" class="form-control  form-control-sm" id="lname" name="lname" placeholder="Password">
-                            </div>
-                            <div class="form-group">
-                                <label >Mac Address</label>
-                                <input type="text" class="form-control  form-control-sm" id="macaddress" name="macaddress" placeholder="macaddress">
-                            </div>
-                            <div class="form-group">
-                                <label >Role</label>
-                                <select class="form-control form-control-sm" name="role">
-                                    <option value="admin">Admin</option>
-                                    <option value="manager">Manager</option>
-                                    <option value="engineer">Engineer</option>
-                                    <option value="customer">Customer</option>
-                                  </select>
-                            </div>                                                   
-                    </div>
 
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-primary" value="save">
-                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="save">
+                                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                            </div>
+                        </form>
                     </div>
-                </form>
-                </div>
                 </div>
             </div>
 
-            <!-- Update Modal -->
-            <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <!-- Update User Modal -->
+            <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <form id="editUserForm" action="{{ url_for('site.edit_user') }}" method="post">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body">  
-                            <div class="form-group">
-                                <input type="hidden" class="form-control form-control-sm" id="edit-userid" name="userid">
-                            </div>                      
-                            <div class="form-group">
-                              <label >Email address</label>
-                              <input type="email" class="form-control form-control-sm" id="edit-username" name="username" aria-describedby="emailHelp" placeholder="Enter email">
-                              <small id="emailHelp" class="form-text text-muted"></small>
-                            </div>                        
-                            <div class="form-group">
-                                <label >First name</label>
-                                <input type="text" class="form-control  form-control-sm" id="edit-fname" name="fname" placeholder="Password">
+                    <div class="modal-content">
+                        <form id="editUserForm" action="{{ url_for('site.edit_user') }}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label >Last name</label>
-                                <input type="text" class="form-control  form-control-sm" id="edit-lname" name="lname" placeholder="Password">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="hidden" class="form-control form-control-sm" id="edit-userid"
+                                        name="userid">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email address</label>
+                                    <input type="email" class="form-control form-control-sm" id="edit-username"
+                                        name="username" aria-describedby="emailHelp" placeholder="Enter email">
+                                    <small id="emailHelp" class="form-text text-muted"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label>First name</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-fname"
+                                        name="fname" placeholder="Password">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last name</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-lname"
+                                        name="lname" placeholder="Password">
+                                </div>
+                                <div class="form-group">
+                                    <label>Mac Address</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-macaddress"
+                                        name="macaddress" placeholder="macaddress">
+                                </div>
+                                <div class="form-group">
+                                    <label>Role</label>
+                                    <select class="form-control form-control-sm" name="role" id="edit-role">
+                                        <option value="admin">Admin</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="engineer">Engineer</option>
+                                        <option value="customer">Customer</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label >Mac Address</label>
-                                <input type="text" class="form-control  form-control-sm" id="edit-macaddress" name="macaddress" placeholder="macaddress">
-                            </div>
-                            <div class="form-group">
-                                <label >Role</label>
-                                <select class="form-control form-control-sm" name="role" id="edit-role">
-                                    <option value="admin">Admin</option>
-                                    <option value="manager">Manager</option>
-                                    <option value="engineer">Engineer</option>
-                                    <option value="customer">Customer</option>
-                                  </select>
-                            </div>                                                   
-                    </div>
 
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-primary" value="save">
-                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="save">
+                                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                            </div>
+                        </form>
                     </div>
-                </form>
-                </div>
                 </div>
             </div>
 
@@ -210,7 +219,10 @@
             <div class="carlist" style="margin-top: 50px;">
                 <h4>List of Cars</h4>
                 <hr>
-                <button>Add new car</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
+                    data-target="#addCarModal">
+                    Add new car
+                </button>
                 <table id="myTable" class="table">
                     <thead>
                         <tr>
@@ -219,6 +231,8 @@
                             <th scope="col">bodytype</th>
                             <th scope="col">color</th>
                             <th scope="col">seats</th>
+                            <th scope="col">cost/hr</th>
+                            <th scope="col">location</th>
                             <th scope="col">edit</th>
                             <th scope="col">report</th>
                             <th scope="col">delete</th>
@@ -232,22 +246,22 @@
                             <td>{{ car['bodytype'] }}</td>
                             <td>{{ car['color'] }}</td>
                             <td>{{ car['seats'] }}</td>
+                            <td>{{ car['costperhour'] }}</td>
+                            <td>{{ car['location'] }}</td>
                             <td>
-                                <form action="{{ url_for('site.carbooking') }}" method="post">
-                                    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}" >
-                                    <input type="submit" value="edit" />
-                                </form>                                
+                                <button type="button" class="btn btn-link btn_editCarModal">
+                                    edit
+                                </button>  
                             </td>
                             <td>
-                                <form action="{{ url_for('site.carbooking') }}" method="post">
-                                    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}" >
-                                    <input type="submit" value="report" />
-                                </form>
+                                <button type="button" class="btn btn-link btn_reportCarModal">
+                                    report
+                                </button>                          
                             </td>
                             <td>
-                                <form action="{{ url_for('site.carbooking') }}" method="post">
-                                    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}" >
-                                    <input type="submit" value="delete" />
+                                <form action="{{ url_for('site.delete_car') }}" method="post">
+                                    <input type="hidden" name="carid" id="carid" value="{{ car['carid'] }}">
+                                    <input type="submit" class="btn btn-link" value="delete" />
                                 </form>
                             </td>
                         </tr>
@@ -256,97 +270,339 @@
                 </table>
             </div>
 
+            <!-- Add Car Modal -->
+            <div class="modal fade" id="addCarModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+
+                        <form id="addCarForm" class="carForm" action="{{ url_for('site.add_car') }}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Add New Car</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Make</label>
+                                    <input type="text" class="form-control form-control-sm" id="make" name="make">
+                                </div>
+                                <div class="form-group">
+                                    <label>Body</label>
+                                    <input type="text" class="form-control  form-control-sm" id="body" name="body">
+                                </div>
+                                <div class="form-group">
+                                    <label>Color</label>
+                                    <input type="text" class="form-control  form-control-sm" id="color" name="color">
+                                </div>
+                                <div class="form-group">
+                                    <label>Seats</label>
+                                    <input type="text" class="form-control  form-control-sm" id="seats" name="seats">
+                                </div>
+                                <div class="form-group">
+                                    <label>location</label>
+                                    <input type="text" class="form-control  form-control-sm" id="location"
+                                        name="location">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cost/Hr</label>
+                                    <input type="text" class="form-control  form-control-sm" id="cost" name="cost">
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="save">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Car Modal -->
+            <div class="modal fade" id="editCarModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+
+                        <form id="editCarForm" class="carForm" action="{{ url_for('site.edit_car') }}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Edit Car</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="hidden" class="form-control form-control-sm" id="edit-carid"
+                                        name="carid">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Make</label>
+                                    <input type="text" class="form-control form-control-sm" id="edit-make" name="make">
+                                </div>
+                                <div class="form-group">
+                                    <label>Body</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-body" name="body">
+                                </div>
+                                <div class="form-group">
+                                    <label>Color</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-color"
+                                        name="color">
+                                </div>
+                                <div class="form-group">
+                                    <label>Seats</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-seats"
+                                        name="seats">
+                                </div>
+                                <div class="form-group">
+                                    <label>location</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-location"
+                                        name="location">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cost/Hr</label>
+                                    <input type="text" class="form-control  form-control-sm" id="edit-cost" name="cost">
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="save">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Car Issue Modal -->
+            <div class="modal fade" id="reportCarModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+
+                        <form id="reportCarForm" class="carForm" action="{{ url_for('site.edit_car') }}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Report an issue</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="hidden" class="form-control form-control-sm" id="reportedcarid"
+                                        name="carid">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Assign To</label>
+                                    <select class="form-control form-control-sm">
+                                        {% for user in users: %}
+                                            {% if user['role'] == 'engineer' %}
+                                                <option value="{{user['userid']}}">{{user['fname']}} {{user['lname']}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select class="form-control form-control-sm">
+                                        <option value="faulty">faulty</option>
+                                        <option value="repairing">Repairing in progress</option>
+                                        <option value="fixed">fixed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Issue</label>
+                                    <textarea class="form-control" id="issue" name="issue" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="save">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- End of car section -->
 
 
-            
-<!-- Java script for table -->
-<!-- <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script> -->
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        $('.table').DataTable({
-            "autoFill": true,
-            "scrollY":        "250px",
-            "scrollCollapse": true,
-            "paging":         false
-        });
+            <!-- Java script for table -->
+            <!-- <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script> -->
+            <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 
-        $('.btn_editUserModal').on('click', function(){
-            $('#editUserModal').modal('show');
-            console.log("opened");
+            <script>
+                $(document).ready(function () {
+                    $('.table').DataTable({
+                        "autoFill": true,
+                        "scrollY": "250px",
+                        "scrollCollapse": true,
+                        "paging": false
+                    });
 
-            $tr = $(this).closest('tr');
+                    //open edit user modal
+                    $('.btn_editUserModal').on('click', function () {
+                        $('#editUserModal').modal('show');
+                        console.log("opened");
 
-            var data = $tr.children('td').map(function(){
-                return $(this).text();
-            }).get();
+                        $tr = $(this).closest('tr');
 
-            console.log(data);
-            $('#edit-userid').val(data[0]);
-            $('#edit-username').val(data[1]);
-            $('#edit-fname').val(data[2]);
-            $('#edit-lname').val(data[3]);
-            $('#edit-role').val(data[4]);
-            $('#edit-macaddress').val(data[5]);
-        });
-    });  
+                        var data = $tr.children('td').map(function () {
+                            return $(this).text();
+                        }).get();
 
-    
+                        console.log(data);
+                        $('#edit-userid').val(data[0]);
+                        $('#edit-username').val(data[1]);
+                        $('#edit-fname').val(data[2]);
+                        $('#edit-lname').val(data[3]);
+                        $('#edit-role').val(data[4]);
+                        $('#edit-macaddress').val(data[5]);
+                    });
+                    
+                    //opens model on car-edit button click
+                    $('.btn_editCarModal').on('click', function () {
+                        $('#editCarModal').modal('show');
 
-    
+                        $tr = $(this).closest('tr');
 
-    /*
-    $('#addUserModal').on('show.bs.modal', function (e) {
-        console.log(">>>>>>>>>>>>");
-        //var data = button.data('mydata');
-        //console.log(data);
-    });
-    */
-    
-    $("#addUserForm").validate({
-        rules:{
-            username: "required",
-            fname: "required",
-            lname: "required",
-            password: {
-                required: true,
-                minlength: 8
-            }
-        },
-        message:{
-            username: {
-                required: "Please enter email.",
-                email: true
-            },
-            fname: "Please enter first name.",
-            lname: "Please enter last name.",
-            password:{
-                required:"Please enter password.",
-                minlength:"Password should be atleast 8 characters."
-            } 
-        }        
-    });
+                        var data = $tr.children('td').map(function () {
+                            return $(this).text();
+                        }).get();
 
-    $("#editUserForm").validate({
-        rules:{
-            username: "required",
-            fname: "required",
-            lname: "required"
-        },
-        message:{
-            username: {
-                required: "Please enter email.",
-                email: true
-            },
-            fname: "Please enter first name.",
-            lname: "Please enter last name.",
-        }        
-    });
+                        console.log(data);
+                        $('#edit-carid').val(data[0]);
+                        $('#edit-make').val(data[1]);
+                        $('#edit-body').val(data[2]);
+                        $('#edit-color').val(data[3]);
+                        $('#edit-seats').val(data[4]);
+                        $('#edit-cost').val(data[5]);
+                        $('#edit-location').val(data[6]);
+                    });
 
-    
+                    $('.btn_reportCarModal').on('click', function () {
+                        $('#reportCarModal').modal('show');
+                        console.log("opened car modal");
 
-</script>
-{% endblock %}
+                        $tr = $(this).closest('tr');
+
+                        var data = $tr.children('td').map(function () {
+                            return $(this).text();
+                        }).get();
+
+                        console.log(data);
+                        $('#reportedcarid').val(data[0]);
+                        
+                    });
+                });
+
+                //validation for add user.
+                $("#addUserForm").validate({
+                    rules: {
+                        username: "required",
+                        fname: "required",
+                        lname: "required",
+                        password: {
+                            required: true,
+                            minlength: 8
+                        }
+                    },
+                    message: {
+                        username: {
+                            required: "Please enter email.",
+                            email: true
+                        },
+                        fname: "Please enter first name.",
+                        lname: "Please enter last name.",
+                        password: {
+                            required: "Please enter password.",
+                            minlength: "Password should be atleast 8 characters."
+                        }
+                    }
+                });
+
+                //validation for edit user
+                $("#editUserForm").validate({
+                    rules: {
+                        username: "required",
+                        fname: "required",
+                        lname: "required"
+                    },
+                    message: {
+                        username: {
+                            required: "Please enter email.",
+                            email: true
+                        },
+                        fname: "Please enter first name.",
+                        lname: "Please enter last name.",
+                    }
+                });
+
+                //--------------------------------------------Car validations------------------------------------------------------
+                //validation for add car
+                $("#addCarForm").validate({
+                    rules: {
+                        make: "required",
+                        body: "required",
+                        color: "required",
+                        cost: {
+                            required: true,
+                            number: true
+                        },
+                        seats: {
+                            required: true,
+                            number: true
+                        }
+                    },
+                    message: {
+                        make: "Please enter make.",
+                        body: "Please enter body type.",
+                        color: "Please enter car color.",
+                        cost: {
+                            required: "Please enter cost per hour.",
+                            number: "Please enter number."
+                        },
+                        seats: {
+                            required: "Please enter first name.",
+                            number: "Please enter number.",
+                        }
+                    }
+                });
+
+                //validation for edit car
+                $("#editCarForm").validate({
+                    rules: {
+                        make: "required",
+                        body: "required",
+                        color: "required",
+                        cost: {
+                            required: true,
+                            number: true
+                        },
+                        seats: {
+                            required: true,
+                            number: true
+                        }
+                    },
+                    message: {
+                        make: "Please enter make.",
+                        body: "Please enter body type.",
+                        color: "Please enter car color.",
+                        cost: {
+                            required: "Please enter cost per hour.",
+                            number: "Please enter number."
+                        },
+                        seats: {
+                            required: "Please enter first name.",
+                            number: "Please enter number.",
+                        }
+                    }
+                });
+
+
+            </script>
+            {% endblock %}
