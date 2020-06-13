@@ -31,7 +31,7 @@ class reception:
             self.__ADDRESS = (self.__HOST, self.__PORT)
 
     # This function is used to load the unlock details
-    def get_mac_address(self, car_id):
+    def load_mac_address(self, car_id):
         """ This function is used to get MAC address of the assigned engineer
         :param (str)car_id
         """

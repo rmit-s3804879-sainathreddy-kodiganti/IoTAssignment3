@@ -89,11 +89,15 @@ class agentApp:
         try:
             child = pexpect.spawn("bluetoothctl")
             child.send("scan on\n")
-            while True:
-                mac_address = self.__socket_obj.get_mac_address(self.__car_id)
-                print("Finding :"+mac_address)
-                index = child.expect('Device '+mac_address+'.*', timeout=None)
-                print('Engineer Found : '+mac_address)
+            data = self.__socket_obj.load_mac_address(self.__car_id)
+            print(data['macAddress'])
+            print(data['fname'])
+            print(data['issue'])
+            print(data['reportid'])
+            mac_address = data['macAddress']
+            print("Finding :"+mac_address)
+            index = child.expect('Device '+mac_address+'.*', timeout=60)
+            print('Engineer Found : '+mac_address)
 
                 # TODO: Unlock car for the engineer
         except KeyboardInterrupt:
