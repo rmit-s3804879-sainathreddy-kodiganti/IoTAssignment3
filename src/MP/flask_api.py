@@ -17,23 +17,6 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 
-"""User Model.
-This model corresponds to the users table in database.
-Attributes:
-    likes_spam: A boolean indicating if we like SPAM or not.
-    userid : Integer type Primary key
-    email : A string to store email and is unique.
-    password : A string to store password.
-    fname : A string to store first name of a user.
-    lname : A string to store last name of a user.
-    faceimage : A blob/largeBinary to store the face image of a user for facial recognisation. This is optonal.
-
-Typical usage:
-    user = User("avi@gmail.com", "password", "Avi", "Bharati")
-
-"""
-
-
 class User(db.Model):
     """
         User Model.
@@ -49,7 +32,7 @@ class User(db.Model):
     role = db.Column(db.String(200))
     macaddress = db.Column(db.String(200))
     bookings = db.relationship("Booking", backref="customer")
-    reportedissues = db.relationship("Reportcars", backref="engineer")
+    reportedissues = db.relationship("Reportcar", backref="engineer")
 
     def __repr__(self):
         return "<User(userid='%s', email='%s', password='%s', fname='%s', lname='%s')>" % (
@@ -95,7 +78,7 @@ class Car(db.Model):
     costperhour = db.Column(db.Float)
     isavailable = db.Column(db.Boolean, default=True)
     bookings = db.relationship('Booking', backref='car')
-    reportedissues = db.relationship('Reportcars', backref='car')
+    reportedissues = db.relationship('Reportcar', backref='car')
 
     def __repr__(self):
         return "<Car(carid='%s', make='%s', bodytype='%s', color='%s', seats='%s', location='%s', costperhour='%s', isavailable='%s')>" % (
@@ -104,7 +87,7 @@ class Car(db.Model):
 
 class Reportcar(db.Model):
     """
-        Reportcars Model.
+        Reportcar Model.
         The model corresponds to the reportcars table in database.
     """
     __tablename__ = "reportcars"
@@ -117,7 +100,7 @@ class Reportcar(db.Model):
  
 
     def __repr__(self):
-        return "<Reportcars(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
+        return "<Reportcar(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
             self.reportid, self.carid, self.issue, self.status, self.engineername, self.engineeremail, self.macaddress
         )
 
@@ -213,11 +196,6 @@ def login():
     return jsonify(result)
 
 
-"""
-Endpoint to show all people.
-http://localhost:portno/user
-"""
-
 
 @api.route("/api/user", methods=["GET"])
 def get_user():
@@ -230,7 +208,6 @@ def get_user():
     return jsonify(result)
 
 
-# Endpoint to get user by email.
 @api.route("/api/userbyemail/<email>", methods=["GET"])
 def get_user_by_email(email):
     """Function to get user by email
@@ -240,8 +217,6 @@ def get_user_by_email(email):
     user = User.query.filter(User.email == email).first()
     result = userSchema.dump(user)
     return jsonify(result)
-
-# Endpoint to get user by email.
 
 
 @api.route("/api/userbyid/<id>", methods=["GET"])
@@ -264,8 +239,6 @@ def get_user_password(password):
     user = User.query.get(password)
     result = userSchema.dump(user)
     return jsonify(result)
-
-# Endpoint to create new person.
 
 
 @api.route("/api/adduser", methods=["POST"])
@@ -408,6 +381,7 @@ def del_car(id):
 
     return carSchema.jsonify(car)
 
+
 @api.route("/api/getcars", methods=["GET"])
 def getcars():
     """Function to get cars list.
@@ -418,6 +392,33 @@ def getcars():
     print(result)
     return jsonify(result)
 
+
+@api.route("/api/reportcar", methods=["POST"])
+def report_car():
+    """This function/api end point reports an issue about a car.
+    :request param: (str) make, (str) bodytype, (str) color, (str) seats, (str) location, (str) costperhour
+    :return: dict{k,v}: User object for the newly created user or empty dict{}.
+    """
+
+    carid = request.form["carid"]
+    userid = request.form["userid"] 
+    status = request.form["status"]
+    issue = request.form["issue"]
+    reportdate = datetime.datetime.now()
+
+    print(carid," | ", userid," | ", status," | ", issue," | ", reportdate)
+    car = Car.query.get(carid)
+    car.isavailable = False
+    # create a new report object.
+    report = Reportcar(carid=carid, userid=userid, status=status, issue=issue, reportdate=reportdate)
+    #report.car.isavailable = False
+    # add new issue to db
+    db.session.add(report)
+    # commit 
+    db.session.commit()
+
+
+    return reportcarSchema.jsonify(report)
 
 @api.route("/api/cars/<carid>", methods=["GET"])
 def get_cars_by_id(carid):

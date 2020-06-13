@@ -405,8 +405,21 @@ def delete_car():
 
 @site.route('/reportcar', methods=['POST'])
 def report_car():
-    #TODO: implementation pending
-    print("Test")    
+    if 'loggedin' in session:
+        carid = request.form['carid']
+        userid = request.form['userid']
+        status = request.form['status']
+        issue = request.form['issue']
+
+        response = requests.post("http://localhost:8080/api/reportcar", {'carid': carid, 'userid': userid, 'status':status, 'issue':issue})
+        data = json.loads(response.text)
+        
+        if data is None:
+            flash("Failed to report an issue.")
+        else:
+            flash("Issue reported sucessfully..")
+        return redirect(url_for('site.home'))
+
 
 
 @site.route('/carslocation', methods=['GET'])
