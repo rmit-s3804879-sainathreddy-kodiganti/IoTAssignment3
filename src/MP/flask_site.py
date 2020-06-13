@@ -93,7 +93,8 @@ def home():
 
         
         if role == 'engineer':
-            return render_template('engineer/engineer-dashboard.html', username=session['username'])
+            reportedcars = get_reported_cars()
+            return render_template('engineer/engineer-dashboard.html', username=session['username'], reportedcars=reportedcars)
         elif role == 'manager':
             return render_template('manager/manager-dashboard.html', username=session['username'])
         else:
@@ -236,7 +237,6 @@ def register():
         password = request.form['password']
 
         if 'loggedin' in session and session['role'] == 'admin':
-            print(">>>>> Identified as admin")
             role = request.form['role']
             macaddress = request.form['macaddress']
         else:
@@ -421,8 +421,7 @@ def report_car():
         return redirect(url_for('site.home'))
 
 
-
-@site.route('/carslocation', methods=['GET'])
+@site.route('/carslocation', methods=['GET', 'POST'])
 def carslocation():
     """This function renders the location of all the cars in google map.
     :param: None
@@ -431,7 +430,12 @@ def carslocation():
     # Check if user is loggedin
     if 'loggedin' in session:
 
-        response = requests.get("http://localhost:8080/api/carslocation")
+        if request.method == 'POST':
+            carid = str(request.form['carid'])
+            response = requests.get("http://localhost:8080/api/carlocation/"+carid)
+        else:
+            response = requests.get("http://localhost:8080/api/carslocation")
+        print(response)
         locations = json.loads(response.text)
 
         # users is loggedin show them the home page
@@ -467,3 +471,14 @@ def uploadimg():
     # en.run(target)
 
     return render_template("imguploaded.html")
+
+
+def get_reported_cars():
+    """
+    Function to get list of reported cars for loggedin engineer.
+    """
+    if session['role'] == 'engineer':
+        carissues = requests.get("http://localhost:8080/api/reportedcars/" + str(session['userid']))
+        return json.loads(carissues.text)
+
+    return None

@@ -3,7 +3,41 @@
 {% block title %}Engineer Dashboard{% endblock %}
 
 {% block content %}
-<h2>Engineer Dashboard</h2>
+<h3 style="text-align: center;">Engineer Dashboard</h3>
+<div>
+<h5>Reported Cars</h5>
+<hr>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">report id</th>
+                <th scope="col">car id</th>
+                <th scope="col">reported on</th>
+                <th scope="col">status</th>
+                <th scope="col">issue</th>
+                <th scope="col">location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rc in reportedcars: %}
+                <tr>
+                    <td>{{ rc['reportid'] }}</td>
+                    <td>{{ rc['carid'] }}</td>
+                    <td>{{ rc['reportdate'] }}</td>
+                    <td>{{ rc['status'] }}</td>
+                    <td>{{ rc['issue'] }}</td>
+                    <td>
+                        <form action="{{ url_for('site.carslocation') }}" method="POST">
+                            <input type="hidden" name="carid" value="{{rc['carid']}}">
+                            <input type="submit" class="btn btn-link" value="view">
+                        </form>
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 
 {% endblock %}
