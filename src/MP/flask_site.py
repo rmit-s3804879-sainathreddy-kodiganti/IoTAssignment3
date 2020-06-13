@@ -6,6 +6,7 @@ import requests
 import json
 import sys
 import re
+import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_api import User
 from flask_api import UserSchema
@@ -14,6 +15,21 @@ from flask_api import carSchema
 from flask_api import carsSchema
 import pathlib
 sys.path.append(os.path.abspath('../Facial recognition'))
+from PIL import Image
+
+import glob
+import shutil
+
+
+try:
+    sys.path.append(os.path.abspath('../../src/QRReader'))
+    from create_qr import create_qr
+except (ModuleNotFoundError, ImportError) as e:
+    print("{} failure".format(type(e)))
+else:
+    print(">>>Import create_qr succeeded")
+
+
 # from encode import encode
 
 app = Flask(__name__)
@@ -54,6 +70,7 @@ def login():
             session['userid'] = data['userid']
             session['username'] = data['email']
             session['role'] = data['role']
+            session['macaddress'] = data['macaddress']
 
             # Redirect to home page
             return redirect(url_for('site.home'))
@@ -130,21 +147,6 @@ def profile():
         return render_template('profile.html', account=acc)
     # users is not loggedin redirect to login page
     return redirect(url_for('site.login'))
-
-
-# @site.route('/cars', methods=['GET', 'POST'])
-# def cars():
-#     """This function renders profile page for a user.
-#     :param: None
-#     :return: redirect to login page or home page.
-#     """
-#     if 'loggedin' in session:
-#         response = requests.get(
-#             "http://localhost:8080/api/get_cars/"+str(session['carid']))
-#         cars = json.loads(response.text)
-#         return render_template('home.html', cars=cars)
-
-#     return redirect(url_for('site.login'))
 
 
 @site.route('/admincars', methods=['GET', 'POST'])
@@ -471,6 +473,31 @@ def uploadimg():
     # en.run(target)
 
     return render_template("imguploaded.html")
+
+
+@site.route('/qr', methods=['POST'])
+def generate_qr():
+    if 'loggedin' in session and session['role'] == 'engineer':
+        carid = request.form['carid']
+        macaddress = session['macaddress']
+
+        gen_qr_obj = create_qr()
+        isCreated = gen_qr_obj.start("EngineerId: {}, carID: {}, MacID: {}".format(session['userid'], carid, macaddress))
+
+        if isCreated:
+            filename = "qr.jpg"
+            target = os.path.abspath('../../src/QRReader/generatedimage')
+
+            #source and destination
+            src = os.path.join(target, filename)            
+            dest = "static/img/qr.jpg"
+            # shutil.copyfile(src_dir, dst_dir)
+            filePath = shutil.copyfile(src, dest)
+            print("x : ", str(filePath))
+            return render_template("/engineer/qrcode.html", qrfile=filePath, msg="")
+        else:
+            return render_template("/engineer/qrcode.html", qrfile="", msg="Failed to generate QR Code.")
+
 
 
 def get_reported_cars():
