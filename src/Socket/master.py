@@ -51,7 +51,18 @@ class master:
                         self.__receive_lock_details(data["lock_time"], data["car_id"], data["duration"], conn)
                     elif(req_type == "load_pickle" ):
                         self.__receive_pickle_update_req(conn)
+                    elif(req_type == "get_mac_address" ):
+                        self.__get_mac_address(data["car_id"], conn)
                     
+    def __get_mac_address(self, car_id, conn):
+        """ This function is used to receive MAC address of the assigned enginner
+        :param (str)car_id, (connection)conn
+        """
+        # response = requests.get("http://localhost:8080/api/engineers/"+car_id)
+        # data = response.json()
+        data['macAddress'] = 'C0:A6:00:C3:05:7D'
+        print(data['macAddress'])
+        socket_utils.sendJson(conn, { "Response": data['macAddress'] })
 
     def __receive_booking_details(self, username, booking_id, car_id, conn):
         """ This function is used to receive booking details
