@@ -168,11 +168,11 @@ The documentaion is created using the sphinx and requires the following commands
 avishekh.bharati@gmail.com | avishekh | admin
 manager@password.com | password | manager
 engineer2@password.com | password | engineer
+ 
 
+## Trello board usage
+![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/trelloboardusage.PNG)
  
- ## Trello board usage
- ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/trelloboardusage.PNG)
- 
- ## TaskCard
- ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/cards.PNG)
+## TaskCard
+![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/cards.PNG)
 
