@@ -126,4 +126,10 @@ The documentaion is created using the sphinx and requires the following commands
   ```
   sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon'
   ```
-  
+ ## Trello board usage
+ ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/trelloboardusage.PNG)
+ 
+ ## TaskCard
+ ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/cards.PNG)
+
+
