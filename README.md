@@ -18,7 +18,7 @@ The implementation of this application involves the following components:
   - Selected Software Engineering Project Management/Tools
 
 ## High level architecture diagram
-![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/feature/meet/src/MP/static/img/architecture.png)
+![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/feature/meet_p/src/MP/static/img/architecture.png)
 
 
 
@@ -115,8 +115,19 @@ The application uses sockets to transfer the data from MP to AP and vice versa. 
  * The following dependecies are required for facereognition system 
   ```shell
     pip3 install qrcode
+	pip3 install pyzbar
   ```
-pip3 install qrcode
+## Voice Recognition
+### General Overview
+* The following dependecies are required for voice recognition system 
+```shell
+    pip3 install SpeechRecognition
+	sudo apt-get install portaudio19-dev python-all-dev python3-all-dev
+	pip3 install pyaudio
+	pip3 install google-api-python-client
+	sudo apt-get install flac
+```
+
 
 ## Face Recognition
 ### General overview
