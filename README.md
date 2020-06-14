@@ -112,6 +112,7 @@ The application uses sockets to transfer the data from MP to AP and vice versa. 
 
 ## QR Code 
 ### General Overview
+The application uses QR code, when admin reports faluty car then QR code is generated so engineers can see that QR code in their dashboard and retrive the issues by scanning QR code. engineers can algo login using QR code.
  * The following dependecies are required for facereognition system 
   ```shell
     pip3 install qrcode
@@ -119,7 +120,7 @@ The application uses sockets to transfer the data from MP to AP and vice versa. 
   ```
 ## Voice Recognition
 ### General Overview
-The application facilitates the voice recognition system that is developed using the google speech to text API. Admins can search cars using voice search.
+The application facilitates the voice recognition system that is developed using the google speech to text API. Admins can search cars using voice search. We need usb mic in order to make voice recognition work, as raspberry pi doesn't have built-in mic so we need to use external mic.
 * The following dependecies are required for voice recognition system 
 ```shell
     pip3 install SpeechRecognition
@@ -151,7 +152,7 @@ The application facilitates the face recognition system that is developed using 
     sudo apt-get install libqt4-test
   ```
 ## Documentation
-The documentaion is created using the sphinx and requires the following commands to be exected to generate the documnetation once     initial setup is finished. 
+The documentaion is created using the sphinx and requires the following commands to be exected to generate the documnetation once initial setup is finished. 
   ```
     make clean
     make html
@@ -160,4 +161,18 @@ The documentaion is created using the sphinx and requires the following commands
   ```
   sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon'
   ```
-  
+## Credentials for 3 different users
+
+ username | password | role
+ ---------|----------|------------
+avishekh.bharati@gmail.com | avishekh | admin
+manager@password.com | password | manager
+engineer2@password.com | password | engineer
+
+ 
+ ## Trello board usage
+ ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/trelloboardusage.PNG)
+ 
+ ## TaskCard
+ ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/cards.PNG)
+
