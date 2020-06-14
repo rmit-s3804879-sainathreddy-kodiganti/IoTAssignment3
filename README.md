@@ -106,7 +106,7 @@ The customers can login to unlock and return the car. , logging in the console r
   - QR Code based login
     The user can validate the account by scafacing the ip cam and providing the facial data to the ML model to login the user into the         system.
 ### Sockets
-The application uses sockets to transfer the data from MP to AP and vice versa. The socket that's implemented  is based on a TCP protocol and accomdates dataflow of botf JSON and Filetransfer
+The application uses sockets to transfer the data from MP to AP and vice versa. The socket that's implemented is based on a TCP protocol and accomodates dataflow of both JSON and Filetransfer
   - The master.py will be excuted with the MP Site resembling a server
   - The reception.py will be executed with AP application resembling a client
 
@@ -132,10 +132,10 @@ The application facilitates the voice recognition system that is developed using
 ## Bluetooth Implementation
 ### General Overview
 The application uses bluetooth for login to agent pi. Engineers can use bluetooth in login to the agent pi.
-* The following dependecies are required for voice recognition system 
+* The following dependencies are required for bluetooth implementation 
 ```shell
-    sudo apt-get install python-pexpect
-	pip3 install pexpect
+   sudo apt-get install python-pexpect
+   pip3 install pexpect
 ```
 
 ## Face Recognition
