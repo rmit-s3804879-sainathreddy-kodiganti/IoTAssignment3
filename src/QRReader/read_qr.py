@@ -79,8 +79,3 @@ class read_qr:
             return self.__found.pop()
         else:
             return "urecognized QR"
-
-
-###remove this ####
-# qrObj = read_qr()
-# print(qrObj.start())

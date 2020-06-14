@@ -73,7 +73,3 @@ class voice_rec:
         """
         text = self.__text_to_speech()
         return text
-
-###remove this ####
-voiceObj = voice_rec()
-print(voiceObj.start())

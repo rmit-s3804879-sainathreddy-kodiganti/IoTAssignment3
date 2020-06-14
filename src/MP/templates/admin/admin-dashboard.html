@@ -19,6 +19,7 @@
             <div class="rentalist">
                 <h5>Rental History</h5>
                 <hr>
+                <button id="recButton" class='recB'>REC</button>
                 <table id="myTable" class="table">
                     <thead class="thead-dark">
                         <tr>
@@ -56,6 +57,7 @@
                     data-target="#addUserModal">
                     Add new user
                 </button>
+                <button id="recButton" class='recB'>REC</button>
                 <table id="myTable" class="table">
                     <thead class="thead-dark">
                         <tr>
@@ -223,6 +225,7 @@
                     data-target="#addCarModal">
                     Add new car
                 </button>
+                <button id="recButton" class='recB'>REC</button>
                 <table id="myTable" class="table">
                     <thead class="thead-dark">
                         <tr>
@@ -614,5 +617,68 @@
                     }
                 });
 
-            </script>
+                $('.recB').addClass("notRec");
+                $('.recB').click(function(){
+                    var alertPhrases = ["Listening timed out whilst waiting for phrase to start","Error in understanding","Error reaching google"]
+                    if($(this).hasClass('notRec')){
+                        $(this).removeClass("notRec");
+                        $(this).addClass("Rec");
+                        elem = $(this);
+                        $.get( "/api/recordAudio", function( data ) {
+                            if(alertPhrases.includes(data)){
+                                alert("Unable to hear! please adjust your voice and try again")
+                            } else {
+                            elem.next().children("#myTable_filter").find("input").val(data).trigger("click").keyup();                                
+                            }
+                            $('.recB').removeClass("Rec");
+                            $('.recB').addClass("notRec");
+                        });
+                    }
+                    else{
+                        $(this).removeClass("Rec");
+                        $(this).addClass("notRec");
+                    }
+                });	
+                </script>
+                <style>
+                /*record button styles*/
+                #recButton {
+                    color: #ffffff;
+                    position: relative;
+                    float: right;
+                    top: 43px;
+                    z-index: 50;
+                    width: 26px;
+                    height: 20px;
+                    font-size: 9px;
+                    background-color: red;
+                    border: 0;
+                    border-radius: 35px;
+                    margin: 18px;
+                    outline: none;
+                }
+
+                .notRec{
+                    background-color: darkred;
+                }
+
+                .Rec{
+                    animation-name: pulse;
+                    animation-duration: 1.5s;
+                    animation-iteration-count: infinite;
+                    animation-timing-function: linear;
+                }
+
+                @keyframes pulse{
+                    0%{
+                        box-shadow: 0px 0px 5px 0px rgba(173,0,0,.3);
+                    }
+                    65%{
+                        box-shadow: 0px 0px 5px 13px rgba(173,0,0,.3);
+                    }
+                    90%{
+                        box-shadow: 0px 0px 5px 13px rgba(173,0,0,0);
+                    }
+                }
+                </style>
             {% endblock %}

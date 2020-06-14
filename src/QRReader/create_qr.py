@@ -36,6 +36,3 @@ class create_qr:
             print("Error occurred in QR ")
             return is_QR_Ready
 
-###remove this ####
-# qrObj = create_qr()
-# print(qrObj.start("hello"))
