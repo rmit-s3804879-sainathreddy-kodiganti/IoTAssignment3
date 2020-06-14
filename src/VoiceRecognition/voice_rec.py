@@ -1,13 +1,11 @@
 # Reference: https://pypi.org/project/SpeechRecognition/
 # Reference: https://www.geeksforgeeks.org/speech-recognition-in-python-using-google-speech-api/
-# Note this example requires PyAudio because it uses the Microphone class
 
 # pip3 install SpeechRecognition
 # sudo apt-get install portaudio19-dev python-all-dev python3-all-dev
 # pip3 install pyaudio
 # pip3 install google-api-python-client
 # sudo apt-get install flac
-# python3 01_microphoneGoogle.py
 
 import speech_recognition as sr
 import subprocess
