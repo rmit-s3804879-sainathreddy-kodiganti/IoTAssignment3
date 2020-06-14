@@ -4,11 +4,14 @@ from flask_marshmallow import Marshmallow, fields, Schema
 import os
 import requests
 import json
+import sys
 from flask import current_app as app
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import redirect, secure_filename
 import datetime
 from calendar_insert import CalendarUtil
+sys.path.append(os.path.abspath('../../src/VoiceRecognition'))
+from voice_rec import voice_rec
 
 app = Flask(__name__)
 api = Blueprint("api", __name__)
@@ -667,3 +670,12 @@ def del_calender_event():
     :return: (None): None
     """
     return jsonify(None)
+
+@api.route("/api/recordAudio", methods=["GET"])
+def record_audio():
+    """This function/api end point records audio
+    :return: (String): converted text
+    """
+    voiceObj = voice_rec()
+    text = voiceObj.start() 
+    return text
