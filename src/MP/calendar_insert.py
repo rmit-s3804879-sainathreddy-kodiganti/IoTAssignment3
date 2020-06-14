@@ -29,6 +29,7 @@ class CalendarUtil():
             ev = service.events().insert(calendarId=calendar_id, body=event).execute()
             return ev
         except Exception as ex:
+            print("Exception in CalenderUtil class. Ex: ", str(ex))
             return None
 
 
