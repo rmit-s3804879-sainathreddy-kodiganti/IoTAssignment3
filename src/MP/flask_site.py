@@ -212,13 +212,14 @@ def register():
     # Output message if something goes wrong...
     msg = ''
     # Check if "username", "password" and "email" POST requests exist (user submitted form)
-    if request.method == 'POST' and 'fname' in request.form and 'lname' in request.form and 'username' in request.form and 'password' in request.form:
+    if request.method == 'POST' and 'fname' in request.form and 'lname' in request.form and 'username' in request.form and 'password' in request.form and 'confirmpassword' in request.form:
 
         # Create variables for easy access
         fname = request.form['fname']
         lname = request.form['lname']
         username = request.form['username']
         password = request.form['password']
+        confirmpassword = request.form['confirmpassword']
 
         if 'loggedin' in session and session['role'] == 'admin':
             role = request.form['role']
@@ -226,44 +227,36 @@ def register():
         else:
             role = 'customer'
             macaddress = ''
-
-        #check if user exists
-        response = ''
-        try:
-            response = requests.get(
-                "http://localhost:8080/api/userbyemail/"+str(username))
-        except ex:
-            print("Error: Exception on checking if user exists.")
-            print(ex)
-
-        # check if user exists with the given username/email
-        account = json.loads(response.text)
-
-        # If account exists show error and validation checks
-        if account:
-            msg = 'Account already exists!'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', username):
-            msg = 'Invalid email address!'
+        
+        if not re.match(r'[^@]+@[^@]+\.[^@]+', username):
+            msg = 'Error: Invalid email address!'
         elif not re.match(r'[A-Za-z0-9]+', fname) or not re.match(r'[A-Za-z0-9]+', lname):
-            msg = 'First name or last name must contain only characters and numbers!'
+            msg = 'Error: First name or last name must contain only characters and numbers!'
         elif not fname or not lname or not username or not password:
-            msg = 'Please fill out the form!'
+            msg = 'Error: Please fill out the form!'
         elif len(password) < 8:
-            msg = 'Password should be atleast 8 characters.'
+            msg = 'Error: Password should be atleast 8 characters.'
+        elif password != confirmpassword:
+            msg = "Error: Password mismatch."
         else:
-            print(">>> Inside else")
-            response = ''
-            # make a api call to save the user.
-            response = requests.post("http://localhost:8080/api/adduser", {
-                                     "email": username, "password": password, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
-            data = json.loads(response.text)
+            #check if user exists            
+            response = requests.get("http://localhost:8080/api/userbyemail/"+str(username))
+            account = json.loads(response.text) 
+            if account:
+                msg = 'Error: Account already exists!'
+            else:
+                response = ''
+                # make a api call to save the user.
+                response = requests.post("http://localhost:8080/api/adduser", {
+                                        "email": username, "password": password, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
+                data = json.loads(response.text)
 
-            # check if response data is valid
-            if data:
-                msg = 'You have been successfully registered!'
+                # check if response data is valid
+                if data:
+                    msg = 'You have been successfully registered!'
     elif request.method == 'POST':
         # Form is empty... (no POST data)
-        msg = 'Please fill out the form!'
+        msg = 'Error: Please fill out the form!'
 
     if 'loggedin' in session and session['role'] == 'admin':
         flash(msg)
@@ -392,7 +385,7 @@ def report_car():
     if 'loggedin' in session:
         carid = request.form['carid']
         userid = request.form['userid']
-        status = request.form['status']
+        status = 'faulty'
         issue = request.form['issue']
 
         response = requests.post("http://localhost:8080/api/reportcar", {'carid': carid, 'userid': userid, 'status':status, 'issue':issue})
