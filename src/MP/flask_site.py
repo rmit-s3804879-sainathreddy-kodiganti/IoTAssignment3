@@ -16,18 +16,14 @@ from flask_api import carsSchema
 import pathlib
 sys.path.append(os.path.abspath('../Facial recognition'))
 from PIL import Image
-
 import glob
 import shutil
-
 
 try:
     sys.path.append(os.path.abspath('../../src/QRReader'))
     from create_qr import create_qr
 except (ModuleNotFoundError, ImportError) as e:
     print("{} failure".format(type(e)))
-else:
-    print(">>>Import create_qr succeeded")
 
 
 app = Flask(__name__)
