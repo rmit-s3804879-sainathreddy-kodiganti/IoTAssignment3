@@ -9,7 +9,7 @@ import pathlib
 WELCOME_MESSAGE = "\n************************************************************** \
                     \n*** Welcome to the Agent Console of car share application  ***\
                     \n************************************************************** \
-                    \n Select any of the following options: \n[1] Unlock car\n[2] Unlock car with Automatic Identification.\n[3] Exit"
+                    \n Select any of the following options: \n[1] Unlock car [Users]\n[2] Unlock car with Automatic Identification [Engineers].\n[3] Unlock car with QR [Engineers].\n[4] Unlock car wih credentials [Engineers]\n[5] Exit"
 INVALID_CHIOCE = 'Oops! wrong selction'
 INVALID_INPUT = 'You have entered invalid input'
 
