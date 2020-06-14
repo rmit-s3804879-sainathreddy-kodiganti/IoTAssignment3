@@ -126,6 +126,16 @@ The documentaion is created using the sphinx and requires the following commands
   ```
   sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon'
   ```
+  
+ ## Credentials for 3 different users
+
+ username | password | role
+ ---------|----------|------------
+avishekh.bharati@gmail.com | avishekh | admin
+manager@password.com | password | manager
+engineer2@password.com | password | engineer
+
+ 
  ## Trello board usage
  ![alt text](https://github.com/rmit-s3804879-sainathreddy-kodiganti/IoTAssignment3/blob/master/src/MP/static/img/trelloboardusage.PNG)
  
