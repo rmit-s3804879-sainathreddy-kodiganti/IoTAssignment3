@@ -8,6 +8,7 @@ import pathlib
 from agentApp import agentApp
 from recognise import recognise
 from reception import reception
+import pexpect
 
 class agentAppTest(unittest.TestCase):
     """This is the agentAppTest Class
@@ -28,6 +29,13 @@ class agentAppTest(unittest.TestCase):
         agent_obj = agentApp()
         cost = agent_obj.calculate_cost_incurred(2500, "25")
         self.assertTrue(cost>0)
+
+    def test_bluetooth_scan(self):
+        agent_obj = agentApp()
+        child = pexpect.spawn("bluetoothctl")
+        child.send("scan on\n")
+        index = child.expect('Device .*', timeout=60)
+        self.assertTrue(index>=0)
 
 if __name__ == '__main__':
     unittest.main()
