@@ -1,4 +1,7 @@
-from flask import Flask, Blueprint, request, jsonify, render_template, redirect, url_for, session, json, jsonify, make_response, flash
+import shutil
+import glob
+from PIL import Image
+from flask import Flask, flash, Blueprint, request, jsonify, render_template, redirect, url_for, session, json, jsonify, make_response, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
@@ -6,6 +9,7 @@ import requests
 import json
 import sys
 import re
+import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_api import User
 from flask_api import UserSchema
@@ -14,15 +18,21 @@ from flask_api import carSchema
 from flask_api import carsSchema
 import pathlib
 sys.path.append(os.path.abspath('../Facial recognition'))
-# from encode import encode
+
+
+try:
+    sys.path.append(os.path.abspath('../../src/QRReader'))
+    from create_qr import create_qr
+except (ModuleNotFoundError, ImportError) as e:
+    print("{} failure".format(type(e)))
+else:
+    print(">>>Import create_qr succeeded")
+
 
 app = Flask(__name__)
 site = Blueprint("site", __name__)
 
 app_root = os.path.dirname(os.path.abspath(__file__))
-
-
-# this will be the login page, we need to use both GET and POST requests
 
 
 @site.route('/', methods=['GET', 'POST'])
@@ -44,7 +54,7 @@ def login():
         # api call to save the user.
         response = requests.post(
             "http://localhost:8080/api/login", {"email": username, "password": password})
-        print(response)
+        # print(response)
         data = json.loads(response.text)
 
         # If account exists in users table in out database
@@ -53,6 +63,9 @@ def login():
             session['loggedin'] = True
             session['userid'] = data['userid']
             session['username'] = data['email']
+            session['role'] = data['role']
+            session['macaddress'] = data['macaddress']
+
             # Redirect to home page
             return redirect(url_for('site.home'))
         else:
@@ -87,14 +100,29 @@ def home():
     """
     # Check if user is loggedin
     if 'loggedin' in session:
-        response = requests.get("http://localhost:8080/api/getcars")
-        print(response)
-        cars = json.loads(response.text)
-        return render_template('home.html', username=session['username'], cars=cars)
+        role = session['role']
+
+        if role == 'engineer':
+            reportedcars = get_reported_cars()
+            return render_template('engineer/engineer-dashboard.html', username=session['username'], reportedcars=reportedcars)
+        elif role == 'manager':
+            return render_template('manager/manager-dashboard.html', username=session['username'])
+        else:
+            car_response = requests.get("http://localhost:8080/api/getcars")
+            cars = json.loads(car_response.text)
+
+            if role == 'admin':
+                user_response = requests.get("http://localhost:8080/api/user")
+                users = json.loads(user_response.text)
+
+                bookings_response = requests.get(
+                    "http://localhost:8080/api/bookings")
+                bookings = json.loads(bookings_response.text)
+                return render_template('admin/admin-dashboard.html', username=session['username'], cars=cars, users=users, bookings=bookings)
+            else:
+                return render_template('home.html', username=session['username'], cars=cars)
     # users is not loggedin redirect to login page
     return redirect(url_for('site.login'))
-
-# this will be the profile page, only accessible for loggedin users
 
 
 @site.route('/profile',  methods=['GET'])
@@ -115,17 +143,17 @@ def profile():
     return redirect(url_for('site.login'))
 
 
-@site.route('/cars', methods=['GET', 'POST'])
-def cars():
+@site.route('/admincars', methods=['GET', 'POST'])
+def admin_cars():
     """This function renders profile page for a user.
     :param: None
     :return: redirect to login page or home page.
     """
     if 'loggedin' in session:
         response = requests.get(
-            "http://localhost:8080/api/get_cars/"+str(session['carid']))
+            "http://localhost:8080/api/getcars")
         cars = json.loads(response.text)
-        return render_template('home.html', cars=cars)
+        return render_template('admin/admin-cars.html', cars=cars)
 
     return redirect(url_for('site.login'))
 
@@ -203,9 +231,15 @@ def register():
         lname = request.form['lname']
         username = request.form['username']
         password = request.form['password']
-        encrypted_password = generate_password_hash(
-            password, method='sha256', salt_length=8)
 
+        if 'loggedin' in session and session['role'] == 'admin':
+            role = request.form['role']
+            macaddress = request.form['macaddress']
+        else:
+            role = 'customer'
+            macaddress = ''
+
+        # check if user exists
         response = ''
         try:
             response = requests.get(
@@ -226,11 +260,14 @@ def register():
             msg = 'First name or last name must contain only characters and numbers!'
         elif not fname or not lname or not username or not password:
             msg = 'Please fill out the form!'
+        elif len(password) < 8:
+            msg = 'Password should be atleast 8 characters.'
         else:
+            print(">>> Inside else")
             response = ''
             # make a api call to save the user.
             response = requests.post("http://localhost:8080/api/adduser", {
-                                     "email": username, "password": password, "fname": fname, "lname": lname})
+                                     "email": username, "password": password, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
             data = json.loads(response.text)
 
             # check if response data is valid
@@ -239,13 +276,175 @@ def register():
     elif request.method == 'POST':
         # Form is empty... (no POST data)
         msg = 'Please fill out the form!'
+
+    if 'loggedin' in session and session['role'] == 'admin':
+        flash(msg)
+        return redirect(url_for('site.home'))
+
     # Show registration form with message (if any)
     return render_template('register.html', msg=msg)
 
-# this will be the home page, only accessible for loggedin users
+
+@site.route('/edituser', methods=['POST'])
+def edit_user():
+    """This function is used for updating a  user.
+    :param: multiple params in POST request
+    :return: redirection with success/failure string message 
+    """
+    userid = request.form['userid']
+    fname = request.form['fname']
+    lname = request.form['lname']
+    username = request.form['username']
+    role = request.form['role']
+    macaddress = request.form['macaddress']
+
+    response = requests.post("http://localhost:8080/api/edituser", {
+        "userid": userid, "email": username, "fname": fname, "lname": lname, "role": role, "macaddress": macaddress})
+    data = json.loads(response.text)
+
+    if data is None:
+        flash("Failed to update the user.")
+    else:
+        flash("User updated sucessfully.")
+    return redirect(url_for('site.home'))
 
 
-@site.route('/carslocation', methods=['GET'])
+@site.route('/deluser', methods=['POST'])
+def del_user():
+    """This function is used for deleting a  user.
+    :param: (str)userid in POST request
+    :return: redirection with success/failure string message 
+    """
+    if 'loggedin' in session:
+        userid = request.form['userid']
+
+        response = requests.delete(
+            "http://localhost:8080/api/deluser/"+str(userid))
+
+        acc = json.loads(response.text)
+
+        if acc is None:
+            flash("Failed to delete the user.")
+        else:
+            flash("User deleted sucessfully.")
+        return redirect(url_for('site.home'))
+
+
+@site.route('/addcar', methods=['POST'])
+def add_car():
+    """This function is used for adding a new car to db.
+    :param: (str)make, (str)bodytype, (str)color, (float)cost, (int)seats, (str)location
+    :return: redirection with success/failure string message 
+    """
+    make = request.form['make']
+    bodytype = request.form['body']
+    color = request.form['color']
+    seats = request.form['seats']
+    location = request.form['location']
+    costperhour = request.form['cost']
+
+    response = requests.post("http://localhost:8080/api/addcar", {
+                             'make': make, 'bodytype': bodytype, 'color': color, 'seats': seats, 'location': location, 'costperhour': costperhour})
+    data = json.loads(response.text)
+
+    if data is None:
+        flash("Failed to save the car.")
+    else:
+        flash("New car added in db.")
+    return redirect(url_for('site.home'))
+
+
+@site.route('/editcar', methods=['POST'])
+def edit_car():
+    """This function is used for updating new car to db.
+    :param: (str)make, (str)bodytype, (str)color, (float)cost, (int)seats, (str)location
+    :return: redirection with success/failure string message 
+    """
+    carid = request.form['carid']
+    make = request.form['make']
+    bodytype = request.form['body']
+    color = request.form['color']
+    seats = request.form['seats']
+    location = request.form['location']
+    costperhour = request.form['cost']
+
+    response = requests.post("http://localhost:8080/api/editcar", {
+                             'carid': carid, 'make': make, 'bodytype': bodytype, 'color': color, 'seats': seats, 'location': location, 'costperhour': costperhour})
+    data = json.loads(response.text)
+
+    if data is None:
+        flash("Failed to update the car.")
+    else:
+        flash("Car updated in db.")
+    return redirect(url_for('site.home'))
+
+    print("Test")
+
+
+@site.route('/delcar', methods=['POST'])
+def delete_car():
+    """This function is used for deleting a  user.
+    :param: (str)userid in POST request
+    :return: redirection with success/failure string message 
+    """
+    if 'loggedin' in session:
+        carid = request.form['carid']
+
+        response = requests.delete(
+            "http://localhost:8080/api/delcar/"+str(carid))
+
+        car = json.loads(response.text)
+
+        if car is None:
+            flash("Failed to delete the car.")
+        else:
+            flash("Car deleted sucessfully.")
+        return redirect(url_for('site.home'))
+
+
+@site.route('/reportcar', methods=['POST'])
+def report_car():
+    if 'loggedin' in session:
+        carid = request.form['carid']
+        userid = request.form['userid']
+        status = request.form['status']
+        issue = request.form['issue']
+
+        response = requests.post("http://localhost:8080/api/reportcar",
+                                 {'carid': carid, 'userid': userid, 'status': status, 'issue': issue})
+        data = json.loads(response.text)
+
+        if data is None:
+            flash("Failed to report an issue.")
+        else:
+            flash("Issue reported sucessfully..")
+        return redirect(url_for('site.home'))
+
+
+def notification(title, body):
+
+    ACCESS_TOKEN = "o.5ls4UBW48oQ6bm5VI6ABbiySEjIS9enC"
+
+    data_send = {"type": "note", "title": title, "body": body}
+
+    resp = requests.post('https://api.pushbullet.com/v2/pushes', data=json.dumps(data_send),
+                         headers={'Authorization': 'Bearer ' + ACCESS_TOKEN,
+                                  'Content-Type': 'application/json'})
+    # if resp.status_code != 200:
+    #     raise Exception('Something wrong')
+    # else:
+    #     print('complete sending')
+
+
+def main():
+    ip_address = os.popen('hostname -I').read()
+    notification(ip_address, "Hello")
+
+
+main()
+
+
+@site.route('/carslocation', methods=['GET', 'POST'])
 def carslocation():
     """This function renders the location of all the cars in google map.
     :param: None
@@ -254,8 +453,13 @@ def carslocation():
     # Check if user is loggedin
     if 'loggedin' in session:
 
-        response = requests.get("http://localhost:8080/api/carslocation")
-        print(response.text)
+        if request.method == 'POST':
+            carid = str(request.form['carid'])
+            response = requests.get(
+                "http://localhost:8080/api/carlocation/"+carid)
+        else:
+            response = requests.get("http://localhost:8080/api/carslocation")
+        print(response)
         locations = json.loads(response.text)
 
         # users is loggedin show them the home page
@@ -270,13 +474,12 @@ def uploadimg():
     """This function uploads image to the server and encodes.
     :return: imguploaded html.
     """
-    print(str(pathlib.Path(__file__).resolve().parents[1])+"im hereeeeeeeeeeeeeeeeeeeeeeeee")
+    print(str(pathlib.Path(__file__).resolve(
+    ).parents[1])+"im hereeeeeeeeeeeeeeeeeeeeeeeee")
     path = str(pathlib.Path(__file__).resolve().parents[1])
-    target = os.path.join(path,'Facial recognition/dataset')
+    target = os.path.join(path, 'Facial recognition/dataset')
     email = session['username']
     target = target+'/'+email
-    # app_root, 'C:/Users\meetp\OneDrive\Desktop\IotAssigment2\src\Facial recognition\dataset/')
-    # print(target)
 
     if not os.path.isdir(target):
         os.mkdir(target)
@@ -287,9 +490,39 @@ def uploadimg():
         destination = "/".join([target, filename])
         print(destination)
         file.save(destination)
-
-    # encode the image
-    # en = encode()
-    # en.run(target)
-
     return render_template("imguploaded.html")
+
+
+@site.route('/qr', methods=['POST'])
+def generate_qr():
+    if 'loggedin' in session and session['role'] == 'engineer':
+        carid = request.form['carid']
+        macaddress = session['macaddress']
+
+        gen_qr_obj = create_qr()
+        isCreated = gen_qr_obj.start("EngineerId: {}, carID: {}, MacID: {}".format(
+            session['userid'], carid, macaddress))
+
+        if isCreated:
+            filename = "qr.jpg"
+            target = os.path.abspath('../../src/QRReader/generatedimage')
+
+            #source and destination
+            src = os.path.join(target, filename)
+            dest = "static/img/qr.jpg"
+            filePath = shutil.copyfile(src, dest)
+            return render_template("/engineer/qrcode.html", qrfile=filePath, msg="")
+        else:
+            return render_template("/engineer/qrcode.html", qrfile="", msg="Failed to generate QR Code.")
+
+
+def get_reported_cars():
+    """
+    Function to get list of reported cars for loggedin engineer.
+    """
+    if session['role'] == 'engineer':
+        carissues = requests.get(
+            "http://localhost:8080/api/reportedcars/" + str(session['userid']))
+        return json.loads(carissues.text)
+
+    return None
