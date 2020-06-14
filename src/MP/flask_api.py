@@ -103,8 +103,8 @@ class Reportcar(db.Model):
  
 
     def __repr__(self):
-        return "<Reportcar(reportid='%s', carid='%s', issue='%s', status='%s', engineername='%s', engineeremail='%s', macaddress='%s')>" % (
-            self.reportid, self.carid, self.issue, self.status, self.engineername, self.engineeremail, self.macaddress
+        return "<Reportcar(reportid='%s', carid='%s', userid='%s', issue='%s', reportdate='%s', status='%s')>" % (
+            self.reportid, self.carid, self.userid, self.issue, self.reportdate, self.status
         )
     
 
@@ -419,7 +419,12 @@ def report_car():
     db.session.add(report)
     # commit 
     db.session.commit()
-
+    
+    user = User.query.get(userid)
+    email = user.email
+    title_for_notification = "Car ID [{}] reported by admin".format(carid)
+    body_for_notification = "Issue: {}. Please check your dashboard for more details".format(issue)
+    notification(title_for_notification, body_for_notification, email)
 
     return reportcarSchema.jsonify(report)
 
@@ -680,3 +685,17 @@ def record_audio():
     voiceObj = voice_rec()
     text = voiceObj.start() 
     return text
+
+
+def notification(title, body, email):
+    """This function is used for sending notifications to engineers for car issues.
+    :param: (Str) title for message
+    :param: (Str) body of message
+    :param: (Str) email of engineer
+    :return: notifications to engineer's pushbullet account. 
+    """
+    ACCESS_TOKEN = "o.5ls4UBW48oQ6bm5VI6ABbiySEjIS9enC"
+    data_send = {"type": "note", "title": title, "body": body, "email":email}
+    resp = requests.post('https://api.pushbullet.com/v2/pushes', data=json.dumps(data_send),
+                         headers={'Authorization': 'Bearer ' + ACCESS_TOKEN,
+                                  'Content-Type': 'application/json'})

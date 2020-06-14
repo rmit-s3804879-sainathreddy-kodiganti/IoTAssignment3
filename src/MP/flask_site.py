@@ -15,23 +15,15 @@ from flask_api import carSchema
 from flask_api import carsSchema
 import pathlib
 sys.path.append(os.path.abspath('../Facial recognition'))
+sys.path.append(os.path.abspath('../../src/QRReader'))
+from create_qr import create_qr
 from PIL import Image
 import glob
 import shutil
 
-try:
-    sys.path.append(os.path.abspath('../../src/QRReader'))
-    from create_qr import create_qr
-except (ModuleNotFoundError, ImportError) as e:
-    print("{} failure".format(type(e)))
-
-
 app = Flask(__name__)
 site = Blueprint("site", __name__)
-
 app_root = os.path.dirname(os.path.abspath(__file__))
-
-
 
 @site.route('/', methods=['GET', 'POST'])
 def login():
@@ -45,9 +37,7 @@ def login():
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         # Create variables for easy access
         username = request.form['username']
-        password = request.form['password']
-        # user = User.query.get(password=password).first()
-        # user = User.query.filter_by(username == username).first()
+        password = request.form['password'] 
 
         # api call to save the user.
         response = requests.post(
