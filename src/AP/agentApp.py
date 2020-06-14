@@ -6,8 +6,10 @@ import sqlite3
 import agent_app_constants as const
 sys.path.append(os.path.abspath('../Facial recognition'))
 sys.path.append(os.path.abspath('../Socket'))
+sys.path.append(os.path.abspath('../../src/QRReader'))
 from reception import reception
 from recognise import recognise
+from read_qr import read_qr
 from getpass import getpass
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -34,6 +36,7 @@ class agentApp:
     __car_lock_time_sec = None
     __socket_obj = reception()
     __socket_obj.main()
+    __is_engineer = False
 
     def read_config(self):
         """This function is used to read the configuration of the car.
@@ -80,7 +83,69 @@ class agentApp:
         elif choice_main == '2':
             self.__unlock_bluetooth()
         elif choice_main == '3':
+            self.__unlock_QR()
+        elif choice_main == '4':
+            self.__unlock_cred_engineer()
+        elif choice_main == '5':
             self.quit()
+    
+    def __unlock_cred_engineer(self):
+        """This function is used for engineer to login via credentials
+
+        """
+        self.__is_engineer = True
+        engineer_details = self.__socket_obj.load_engineer_details(self.__car_id)
+        if (len (engineer_details) ==5):
+            username = engineer_details['email']
+            self.__initiate_login(username)
+        else:
+            self.__print_to_console('The vehicle is not assigned to an Engineer for repair!\n')
+            self.__print_to_console(self.__welcome_message)
+            self.__handle_selection()
+
+
+
+    def __unlock_QR(self):
+        """This function is used for automatic identification system by using QR Code
+
+        """
+        try:
+            qrObj = read_qr()
+            data  = qrObj.start()
+            engineer_details = self.__socket_obj.load_engineer_details(self.__car_id)
+            if(engineer_details):
+                mac_address = engineer_details['macAddress']
+                username = engineer_details['fname']
+                issue = engineer_details['issue']
+                reportid = engineer_details['reportid']
+                self.__print_to_console('Authenticating...')
+                if (data != "urecognized QR"):
+                    qr_data = data.split(',')
+                    qr_engineer_id = qr_data[0].split(':')[1].strip() 
+                    qr_car_id = qr_data[1].split(':')[1].strip() 
+                    qr_mac_id = qr_data[2].split(':',1)[1].strip()
+                    if (qr_mac_id==mac_address and self.__car_id==qr_car_id):
+                        self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
+                        self.__print_to_console(('Report ID: {}').format(reportid))
+                        self.__print_to_console(('Issue with the car: {}\n').format(issue))
+                        message = self.__socket_obj.load_report_status(reportid, 'repairing')
+                        self.__print_to_console(message)
+                        self.__show_engineer_exit(reportid)
+                    else:
+                        self.__print_to_console('Failed to Authenticate! \n')
+                        self.__print_to_console(self.__welcome_message)
+                        self.__handle_selection()
+                else:
+                    self.__print_to_console('Invalid QR!\n')
+                    self.__print_to_console(self.__welcome_message)
+                    self.__handle_selection()
+            else:
+                self.__print_to_console('The vehicle is not assigned to an Engineer for repair!\n')
+                self.__print_to_console(self.__welcome_message)
+                self.__handle_selection()
+        except KeyboardInterrupt:
+            child.close()
+            results.close()
 
     def __unlock_bluetooth(self):
         """This function is used for automatic identification system by using bluetooth
@@ -97,17 +162,11 @@ class agentApp:
                 reportid = engineer_details['reportid']
                 self.__print_to_console('Searching for Engineer...')
                 index = child.expect('Device '+mac_address+'.*', timeout=60)
-                self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
-                self.__print_to_console(('Report ID: {}').format(reportid))
-                self.__print_to_console(('Issue with the car: {}\n').format(issue))
-                message = self.__socket_obj.load_report_status(reportid, 'repairing')
-                self.__print_to_console(message)
-                self.__show_bluetooth_exit(reportid)
+                self.__successful_unlock_engineer(engineer_details)
             else:
-                self.__print_to_console('The vehicle is not assign to an Engineer for repair!\n')
+                self.__print_to_console('The vehicle is not assigned to an Engineer for repair!\n')
                 self.__print_to_console(self.__welcome_message)
                 self.__handle_selection()
-
         except pexpect.exceptions.TIMEOUT:
             print("Bluetooth Timeout!")
             self.__display_welcome_message()
@@ -115,8 +174,8 @@ class agentApp:
             child.close()
             results.close()
 
-    def __show_bluetooth_exit(self, reportid):
-        """This fucntion is used to display the exit options for bluetooth.
+    def __show_engineer_exit(self, reportid):
+        """This fucntion is used to display the exit options for engineer.
 
         """
         choice_exit = input('Enter Q to lock the car and complete repair:  ')
@@ -201,7 +260,11 @@ class agentApp:
         valid_user = self.__socket_obj.load_credentials(password, username)
         self.__clear_console()
         if valid_user:
-            self.__successful_unlock(username)
+            if (self.__is_engineer):
+                engineer_details = self.__socket_obj.load_engineer_details(self.__car_id)
+                self.__successful_unlock_engineer(engineer_details)
+            else:    
+                self.__successful_unlock(username)
         else:
             self.__print_to_console('Failed to Authenticate')
             self.quit()
@@ -215,13 +278,33 @@ class agentApp:
         face_rec = recognise()
         recognised_name = face_rec.start()
         if recognised_name == username:
-            self.__successful_unlock(username)
+            if (self.__is_engineer):
+                engineer_details = self.__socket_obj.load_engineer_details(self.__car_id)
+                self.__successful_unlock_engineer(engineer_details)
+            else:    
+                self.__successful_unlock(username)
         else:
             self.__print_to_console('Failed to Authenticate')
-            #self.quit()
+            self.quit()
+    
+    def __successful_unlock_engineer(self, engineer_details):
+        """This function is used to unlock the car and send details to MP for engineer.
+        
+        :param: (dict) engineer details
+        """
+        mac_address = engineer_details['macAddress']
+        username = engineer_details['fname']
+        issue = engineer_details['issue']
+        reportid = engineer_details['reportid']
+        self.__print_to_console(('Hi {}, You have successfully entered the car').format(username))
+        self.__print_to_console(('Report ID: {}').format(reportid))
+        self.__print_to_console(('Issue with the car: {}\n').format(issue))
+        message = self.__socket_obj.load_report_status(reportid, 'repairing')
+        self.__print_to_console(message)
+        self.__show_engineer_exit(reportid)
     
     def __successful_unlock(self, username):
-        """This function is used to unclock the car and send details to MP.
+        """This function is used to unlock the car and send details to MP.
         
         :param: (str) username of the customer
         """
