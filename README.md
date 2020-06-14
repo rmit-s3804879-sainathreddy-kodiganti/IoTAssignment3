@@ -119,6 +119,7 @@ The application uses sockets to transfer the data from MP to AP and vice versa. 
   ```
 ## Voice Recognition
 ### General Overview
+The application facilitates the voice recognition system that is developed using the google speech to text API. Admins can search cars using voice search.
 * The following dependecies are required for voice recognition system 
 ```shell
     pip3 install SpeechRecognition
@@ -127,6 +128,15 @@ The application uses sockets to transfer the data from MP to AP and vice versa. 
 	pip3 install google-api-python-client
 	sudo apt-get install flac
 ```
+## Bluetooth Implementation
+### General Overview
+The application uses bluetooth for login to agent pi. Engineers can use bluetooth in login to the agent pi.
+* The following dependecies are required for voice recognition system 
+```shell
+    sudo apt-get install python-pexpect
+	pip3 install pexpect
+```
+
 
 
 ## Face Recognition
