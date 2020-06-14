@@ -404,6 +404,10 @@ def delete_car():
 
 @site.route('/reportcar', methods=['POST'])
 def report_car():
+    """This function is used for reporting car issues to engineers.
+    :param: (str)carid, (str)userid, (str)status, (float)issue
+    :return: redirection with success/failure string message 
+    """
     if 'loggedin' in session:
         carid = request.form['carid']
         userid = request.form['userid']
@@ -422,7 +426,10 @@ def report_car():
 
 
 def notification(title, body):
-
+    """This function is used for sending notifications to engineers for car issues.
+    :param: None
+    :return: notifications to engineer's pushbullet account. 
+    """
     ACCESS_TOKEN = "o.5ls4UBW48oQ6bm5VI6ABbiySEjIS9enC"
 
     data_send = {"type": "note", "title": title, "body": body}
