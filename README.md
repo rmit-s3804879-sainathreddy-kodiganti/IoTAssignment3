@@ -137,8 +137,6 @@ The application uses bluetooth for login to agent pi. Engineers can use bluetoot
 	pip3 install pexpect
 ```
 
-
-
 ## Face Recognition
 ### General overview
 The application facilitates the face recognition system that is developed using the OpenCV and haarcascade face detection endoers the model used HSR conversion of the image to and reduces the scaling to process the images quicker. The face recognition system is implemented using ip camera as there was no physical camera available.
