@@ -644,6 +644,7 @@ def get_mac_address(carid):
         engineer = userSchema.dump(reportCar.engineer)
         report = reportcarSchema.dump(reportCar)
         result = {
+            "email": engineer['email'],
             "fname": engineer['fname'],
             "macAddress": engineer['macaddress'],
             "issue": report['issue'],
