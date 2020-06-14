@@ -16,12 +16,12 @@ sys.path.insert(0, os.path.abspath('../src'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'IOTAssignment2'
+project = 'IOTAssignment 3'
 copyright = '2020, Avishekh Bharati, Ren Chalissery, Sainath Reddy Kodiganti,  Meet Girish Patalia'
 author = 'Avishekh Bharati, Ren Chalissery, Sainath Reddy Kodiganti,  Meet Girish Patalia'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = '2.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,6 +33,8 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.napoleon'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+
+autodoc_default_flags = ['members', 'undoc-members', 'private-members', 'special-members', 'inherited-members', 'show-inheritance']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
